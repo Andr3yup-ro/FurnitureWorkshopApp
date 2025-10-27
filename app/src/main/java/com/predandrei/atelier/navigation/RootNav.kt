@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -26,6 +27,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.predandrei.atelier.ui.screens.DashboardScreen
+import com.predandrei.atelier.ui.screens.ProjectsScreen
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 
 private data class Destination(
     val route: String,
@@ -69,6 +74,16 @@ fun RootNav() {
                     )
                 }
             }
+        },
+        floatingActionButton = {
+            if (currentRoute == "projects") {
+                val ctx = LocalContext.current
+                FloatingActionButton(onClick = {
+                    Toast.makeText(ctx, "TODO: Add new project", Toast.LENGTH_SHORT).show()
+                }) {
+                    Icon(Icons.Rounded.Add, contentDescription = "Add project")
+                }
+            }
         }
     ) { innerPadding ->
         NavHost(
@@ -78,7 +93,7 @@ fun RootNav() {
             route = "root"
         ) {
             composable("dashboard") { DashboardScreen(modifier = Modifier.fillMaxSize()) }
-            composable("projects") { Text("Projects", modifier = Modifier.fillMaxSize()) }
+            composable("projects") { ProjectsScreen(modifier = Modifier.fillMaxSize()) }
             composable("clients") { Text("Clients", modifier = Modifier.fillMaxSize()) }
             composable("inventory") { Text("Inventory", modifier = Modifier.fillMaxSize()) }
             composable("settings") { Text("Settings", modifier = Modifier.fillMaxSize()) }
