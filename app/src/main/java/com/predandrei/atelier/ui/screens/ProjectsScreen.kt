@@ -1,6 +1,5 @@
 package com.predandrei.atelier.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,44 +17,42 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.predandrei.atelier.data.model.Project
+import com.predandrei.atelier.ui.viewmodel.ProjectsViewModel
 
 @Composable
-fun ProjectsScreen(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    val projects = sampleProjects()
+fun ProjectsScreen(
+    modifier: Modifier = Modifier,
+    onEdit: (Long?) -> Unit = {},
+    vm: ProjectsViewModel = hiltViewModel()
+) {
+    val projects by vm.projects
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(projects) { p ->
-            ElevatedCard(
-                modifier = Modifier.clickable {
-                    Toast.makeText(context, "Open project: ${p.name}", Toast.LENGTH_SHORT).show()
-                }
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Icon(Icons.Rounded.Work, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.height(8.dp))
-                    Text(p.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Text(p.client, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(p.status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
-                }
-            }
+        items(projects, key = { it.id }) { p ->
+            ProjectRow(p, onClick = { onEdit(p.id) })
         }
     }
 }
 
-private data class ProjectPreview(val name: String, val client: String, val status: String)
-
-private fun sampleProjects() = listOf(
-    ProjectPreview("Kitchen - L shape", "Client: Ionescu Maria", "In progress"),
-    ProjectPreview("Wardrobe 3 doors", "Client: Popescu Andrei", "Design review"),
-    ProjectPreview("Office desk", "Client: SC Tech SRL", "Awaiting materials"),
-    ProjectPreview("TV cabinet", "Client: Dumitru Ioan", "Ready for delivery"),
-)
+@Composable
+private fun ProjectRow(p: Project, onClick: () -> Unit) {
+    ElevatedCard(modifier = Modifier.clickable { onClick() }) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Icon(Icons.Rounded.Work, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.height(8.dp))
+            Text(p.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text("Client ID: ${p.clientId}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(p.status.name, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+        }
+    }
+}

@@ -12,8 +12,14 @@ interface ClientDao {
     @Query("SELECT * FROM Client ORDER BY name")
     fun getAll(): Flow<List<Client>>
 
+    @Query("SELECT * FROM Client WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): Client?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(vararg clients: Client)
+
+    @Query("DELETE FROM Client WHERE id = :id")
+    suspend fun delete(id: Long)
 }
 
 @Dao
@@ -21,8 +27,14 @@ interface ProjectDao {
     @Query("SELECT * FROM Project ORDER BY id DESC")
     fun getAll(): Flow<List<Project>>
 
+    @Query("SELECT * FROM Project WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): Project?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(vararg projects: Project)
+
+    @Query("DELETE FROM Project WHERE id = :id")
+    suspend fun delete(id: Long)
 }
 
 @Dao
@@ -30,8 +42,14 @@ interface InventoryDao {
     @Query("SELECT * FROM InventoryItem ORDER BY name")
     fun getAll(): Flow<List<InventoryItem>>
 
+    @Query("SELECT * FROM InventoryItem WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): InventoryItem?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(vararg items: InventoryItem)
+
+    @Query("DELETE FROM InventoryItem WHERE id = :id")
+    suspend fun delete(id: Long)
 }
 
 @Dao

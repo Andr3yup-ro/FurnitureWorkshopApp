@@ -28,6 +28,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.predandrei.atelier.ui.screens.DashboardScreen
 import com.predandrei.atelier.ui.screens.ProjectsScreen
+import com.predandrei.atelier.ui.screens.ProjectEditScreen
+import com.predandrei.atelier.ui.screens.ClientsScreen
+import com.predandrei.atelier.ui.screens.ClientEditScreen
+import com.predandrei.atelier.ui.screens.InventoryScreen
+import com.predandrei.atelier.ui.screens.InventoryEditScreen
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
@@ -79,7 +84,8 @@ fun RootNav() {
             if (currentRoute == "projects") {
                 val ctx = LocalContext.current
                 FloatingActionButton(onClick = {
-                    Toast.makeText(ctx, "TODO: Add new project", Toast.LENGTH_SHORT).show()
+                    // Navigate to add project
+                    navController.navigate("project_edit")
                 }) {
                     Icon(Icons.Rounded.Add, contentDescription = "Add project")
                 }
@@ -93,10 +99,39 @@ fun RootNav() {
             route = "root"
         ) {
             composable("dashboard") { DashboardScreen(modifier = Modifier.fillMaxSize()) }
-            composable("projects") { ProjectsScreen(modifier = Modifier.fillMaxSize()) }
-            composable("clients") { Text("Clients", modifier = Modifier.fillMaxSize()) }
-            composable("inventory") { Text("Inventory", modifier = Modifier.fillMaxSize()) }
+            composable("projects") {
+                ProjectsScreen(modifier = Modifier.fillMaxSize(), onEdit = { id ->
+                    navController.navigate("project_edit" + (id?.let { "/$it" } ?: ""))
+                })
+            }
+            composable("clients") {
+                ClientsScreen(modifier = Modifier.fillMaxSize(), onEdit = { id ->
+                    navController.navigate("client_edit" + (id?.let { "/$it" } ?: ""))
+                })
+            }
+            composable("inventory") {
+                InventoryScreen(modifier = Modifier.fillMaxSize(), onEdit = { id ->
+                    navController.navigate("inventory_edit" + (id?.let { "/$it" } ?: ""))
+                })
+            }
             composable("settings") { Text("Settings", modifier = Modifier.fillMaxSize()) }
+
+            // Edit/Create routes (optional id)
+            composable("project_edit") { ProjectEditScreen(projectId = null, onSaved = { navController.popBackStack() }) }
+            composable("project_edit/{id}") { backStack ->
+                val id = backStack.arguments?.getString("id")?.toLongOrNull()
+                ProjectEditScreen(projectId = id, onSaved = { navController.popBackStack() })
+            }
+            composable("client_edit") { ClientEditScreen(clientId = null, onSaved = { navController.popBackStack() }) }
+            composable("client_edit/{id}") { backStack ->
+                val id = backStack.arguments?.getString("id")?.toLongOrNull()
+                ClientEditScreen(clientId = id, onSaved = { navController.popBackStack() })
+            }
+            composable("inventory_edit") { InventoryEditScreen(itemId = null, onSaved = { navController.popBackStack() }) }
+            composable("inventory_edit/{id}") { backStack ->
+                val id = backStack.arguments?.getString("id")?.toLongOrNull()
+                InventoryEditScreen(itemId = id, onSaved = { navController.popBackStack() })
+            }
         }
     }
 }
