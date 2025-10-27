@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -12,6 +13,7 @@ import com.predandrei.atelier.data.model.ProjectMaterialUsage
 import com.predandrei.atelier.ui.viewmodel.ProjectMaterialsViewModel
 import com.predandrei.atelier.ui.viewmodel.InventoryViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectMaterialsScreen(projectId: Long, onDone: () -> Unit, vm: ProjectMaterialsViewModel = hiltViewModel(), invVm: InventoryViewModel = hiltViewModel()) {
     val usage by vm.usage(projectId).collectAsState()
