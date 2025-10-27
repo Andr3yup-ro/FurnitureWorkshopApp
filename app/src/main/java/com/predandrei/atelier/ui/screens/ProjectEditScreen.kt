@@ -5,12 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -18,6 +13,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.predandrei.atelier.data.model.Project
 import com.predandrei.atelier.data.model.ProjectStatus
 import com.predandrei.atelier.ui.viewmodel.ProjectsViewModel
+import com.predandrei.atelier.ui.viewmodel.ClientsViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +25,7 @@ fun ProjectEditScreen(
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var clientIdText by remember { mutableStateOf("") }
+    var selectedClientId by remember { mutableStateOf<Long?>(null) }
     var valueRonText by remember { mutableStateOf("") }
     var status by remember { mutableStateOf(ProjectStatus.PENDING) }
 
@@ -40,7 +36,7 @@ fun ProjectEditScreen(
             vm.get(projectId)?.let { p ->
                 title = p.title
                 description = p.description.orEmpty()
-                clientIdText = p.clientId.toString()
+                selectedClientId = p.clientId.takeIf { it != 0L }
                 valueRonText = p.valueRon.toString()
                 status = p.status
             }
@@ -52,7 +48,26 @@ fun ProjectEditScreen(
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") })
         Spacer(Modifier.height(8.dp))
-        OutlinedTextField(value = clientIdText, onValueChange = { clientIdText = it }, label = { Text("Client ID") })
+        // Client picker
+        val clientsVm: ClientsViewModel = hiltViewModel()
+        val clients by clientsVm.clients.collectAsState()
+        var clientExpanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(expanded = clientExpanded, onExpandedChange = { clientExpanded = !clientExpanded }) {
+            OutlinedTextField(
+                readOnly = true,
+                value = clients.firstOrNull { it.id == (selectedClientId ?: -1L) }?.name ?: "Select client",
+                onValueChange = {},
+                label = { Text("Client") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = clientExpanded) },
+                modifier = Modifier.menuAnchor()
+            )
+            ExposedDropdownMenu(expanded = clientExpanded, onDismissRequest = { clientExpanded = false }) {
+                DropdownMenuItem(text = { Text("No client") }, onClick = { selectedClientId = null; clientExpanded = false })
+                clients.forEach { c ->
+                    DropdownMenuItem(text = { Text(c.name) }, onClick = { selectedClientId = c.id; clientExpanded = false })
+                }
+            }
+        }
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(value = valueRonText, onValueChange = { valueRonText = it.filter { ch -> ch.isDigit() } }, label = { Text("Value (RON bani)") })
         Spacer(Modifier.height(8.dp))
@@ -66,7 +81,7 @@ fun ProjectEditScreen(
         }
         Spacer(Modifier.height(16.dp))
         Button(onClick = {
-            val clientId = clientIdText.toLongOrNull() ?: 0L
+            val clientId = selectedClientId ?: 0L
             val valueRon = valueRonText.toLongOrNull() ?: 0L
             val p = Project(
                 id = projectId ?: 0L,

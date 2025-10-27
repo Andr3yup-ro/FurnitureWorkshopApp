@@ -81,13 +81,16 @@ fun RootNav() {
             }
         },
         floatingActionButton = {
-            if (currentRoute == "projects") {
-                val ctx = LocalContext.current
-                FloatingActionButton(onClick = {
-                    // Navigate to add project
-                    navController.navigate("project_edit")
-                }) {
+            val ctx = LocalContext.current
+            when (currentRoute) {
+                "projects" -> FloatingActionButton(onClick = { navController.navigate("project_edit") }) {
                     Icon(Icons.Rounded.Add, contentDescription = "Add project")
+                }
+                "clients" -> FloatingActionButton(onClick = { navController.navigate("client_edit") }) {
+                    Icon(Icons.Rounded.Add, contentDescription = "Add client")
+                }
+                "inventory" -> FloatingActionButton(onClick = { navController.navigate("inventory_edit") }) {
+                    Icon(Icons.Rounded.Add, contentDescription = "Add item")
                 }
             }
         }
