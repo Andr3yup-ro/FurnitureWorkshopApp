@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.*
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -52,5 +52,20 @@ fun ClientEditScreen(clientId: Long?, onSaved: () -> Unit, vm: ClientsViewModel 
             )
             scope.launch { vm.save(c); onSaved() }
         }) { Text("Save") }
+
+        if ((clientId ?: 0L) > 0) {
+            Spacer(Modifier.height(16.dp))
+            var confirm by remember { mutableStateOf(false) }
+            if (confirm) {
+                AlertDialog(
+                    onDismissRequest = { confirm = false },
+                    confirmButton = { TextButton(onClick = { scope.launch { vm.delete(clientId!!); onSaved() } }) { Text("Delete") } },
+                    dismissButton = { TextButton(onClick = { confirm = false }) { Text("Cancel") } },
+                    title = { Text("Delete client?") },
+                    text = { Text("This action cannot be undone.") }
+                )
+            }
+            OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error), onClick = { confirm = true }) { Text("Delete") }
+        }
     }
 }

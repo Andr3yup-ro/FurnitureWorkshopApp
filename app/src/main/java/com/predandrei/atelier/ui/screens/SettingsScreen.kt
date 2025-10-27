@@ -10,12 +10,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.predandrei.atelier.ui.viewmodel.LanguageViewModel
+import com.predandrei.atelier.ui.viewmodel.BackupViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
-fun SettingsScreen(vm: LanguageViewModel = hiltViewModel()) {
+fun SettingsScreen(vm: LanguageViewModel = hiltViewModel(), backupVm: BackupViewModel = hiltViewModel()) {
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Language")
         Button(onClick = { vm.setLanguage("ro") }) { Text("Română") }
         Button(onClick = { vm.setLanguage(null) }) { Text("English") }
+
+        Spacer(Modifier.height(24.dp))
+        Text("Backup")
+        Button(onClick = { backupVm.backup() }) { Text("Backup to file") }
+        Button(onClick = { backupVm.restore() }) { Text("Restore from backup") }
+        val status = backupVm.status.collectAsState().value
+        status?.let { Text(it) }
     }
 }

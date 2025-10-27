@@ -15,10 +15,13 @@ import androidx.compose.material.icons.rounded.Work
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,14 +36,19 @@ fun ProjectsScreen(
     vm: ProjectsViewModel = hiltViewModel()
 ) {
     val projects by vm.projects.collectAsState()
+    var query by remember { mutableStateOf("") }
 
-    LazyColumn(
+    Column(modifier.fillMaxSize()) {
+        OutlinedTextField(value = query, onValueChange = { query = it }, label = { Text("Search projects") }, modifier = Modifier.padding(16.dp))
+        LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(projects, key = { it.id }) { p ->
-            ProjectRow(p, onClick = { onEdit(p.id) })
+        ) {
+            val filtered = projects.filter { it.title.contains(query, ignoreCase = true) || it.description.orEmpty().contains(query, true) }
+            items(filtered, key = { it.id }) { p ->
+                ProjectRow(p, onClick = { onEdit(p.id) })
+            }
         }
     }
 }

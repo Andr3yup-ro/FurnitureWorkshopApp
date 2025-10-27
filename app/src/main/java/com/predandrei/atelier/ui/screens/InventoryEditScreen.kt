@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -55,5 +55,20 @@ fun InventoryEditScreen(itemId: Long?, onSaved: () -> Unit, vm: InventoryViewMod
             val item = InventoryItem(id = itemId ?: 0L, name = name, category = cat, quantity = qty, minStock = min, supplierId = null)
             scope.launch { vm.save(item); onSaved() }
         }) { Text("Save") }
+
+        if ((itemId ?: 0L) > 0) {
+            Spacer(Modifier.height(16.dp))
+            var confirm by remember { mutableStateOf(false) }
+            if (confirm) {
+                AlertDialog(
+                    onDismissRequest = { confirm = false },
+                    confirmButton = { TextButton(onClick = { scope.launch { vm.delete(itemId!!); onSaved() } }) { Text("Delete") } },
+                    dismissButton = { TextButton(onClick = { confirm = false }) { Text("Cancel") } },
+                    title = { Text("Delete item?") },
+                    text = { Text("This action cannot be undone.") }
+                )
+            }
+            OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error), onClick = { confirm = true }) { Text("Delete") }
+        }
     }
 }

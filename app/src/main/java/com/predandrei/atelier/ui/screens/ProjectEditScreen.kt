@@ -109,6 +109,18 @@ fun ProjectEditScreen(
             Button(onClick = { onManageMaterials(projectId!!) }, enabled = true) {
                 Text("Manage Materials")
             }
+            Spacer(Modifier.height(16.dp))
+            var confirm by remember { mutableStateOf(false) }
+            if (confirm) {
+                AlertDialog(
+                    onDismissRequest = { confirm = false },
+                    confirmButton = { TextButton(onClick = { scope.launch { vm.delete(projectId!!); onSaved() } }) { Text("Delete") } },
+                    dismissButton = { TextButton(onClick = { confirm = false }) { Text("Cancel") } },
+                    title = { Text("Delete project?") },
+                    text = { Text("This action cannot be undone.") }
+                )
+            }
+            OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error), onClick = { confirm = true }) { Text("Delete") }
         }
     }
 }
