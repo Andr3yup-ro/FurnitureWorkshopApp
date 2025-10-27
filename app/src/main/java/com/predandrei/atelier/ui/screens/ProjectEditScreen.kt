@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 fun ProjectEditScreen(
     projectId: Long?,
     onSaved: () -> Unit,
+    onManagePayments: (Long) -> Unit = {},
     vm: ProjectsViewModel = hiltViewModel()
 ) {
     var title by remember { mutableStateOf("") }
@@ -97,5 +98,12 @@ fun ProjectEditScreen(
                 onSaved()
             }
         }) { Text("Save") }
+
+        if ((projectId ?: 0L) > 0) {
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = { onManagePayments(projectId!!) }, enabled = true) {
+                Text("Manage Payments")
+            }
+        }
     }
 }
