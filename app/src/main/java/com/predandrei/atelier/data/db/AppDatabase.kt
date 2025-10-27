@@ -2,6 +2,7 @@ package com.predandrei.atelier.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.predandrei.atelier.data.model.*
 
 @Database(
@@ -17,6 +18,7 @@ import com.predandrei.atelier.data.model.*
     version = 1,
     exportSchema = false
 )
+@TypeConverters(EnumConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun clientDao(): ClientDao
     abstract fun projectDao(): ProjectDao

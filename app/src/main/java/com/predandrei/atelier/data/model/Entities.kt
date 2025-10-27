@@ -2,8 +2,7 @@ package com.predandrei.atelier.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.math.BigDecimal
-import java.time.LocalDate
+// removed unused imports
 
 enum class ProjectStatus { PENDING, IN_PROGRESS, COMPLETED, ON_HOLD }
 
