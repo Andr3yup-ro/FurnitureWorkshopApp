@@ -1,0 +1,25 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Build with Gradle (no wrapper)
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.10.2
+          arguments: build -x test

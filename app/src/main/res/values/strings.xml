@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Atelier Manager</string>
+
+    <!-- Navigation labels -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_projects">Projects</string>
+    <string name="nav_clients">Clients</string>
+    <string name="nav_inventory">Inventory</string>
+    <string name="nav_finance">Finance</string>
+    <string name="nav_payments">Payments</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Settings -->
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="romanian">Romanian</string>
+    <string name="toggle_language">Switch Language</string>
+
+    <!-- Dashboard -->
+    <string name="overview">Overview</string>
+    <string name="low_stock_alerts">Low stock alerts</string>
+    <string name="project_statuses">Project statuses</string>
+    <string name="financial_summary">Financial summary</string>
+</resources>
