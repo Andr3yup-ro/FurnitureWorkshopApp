@@ -104,7 +104,14 @@ fun RootNav() {
             modifier = Modifier.fillMaxSize().padding(innerPadding),
             route = "root"
         ) {
-            composable("dashboard") { DashboardScreen(modifier = Modifier.fillMaxSize()) }
+            composable("dashboard") {
+                DashboardScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    onOpenProjects = { navController.navigate("projects") },
+                    onOpenInventory = { navController.navigate("inventory") },
+                    onOpenFinance = { navController.navigate("finance") }
+                )
+            }
             composable("projects") {
                 ProjectsScreen(modifier = Modifier.fillMaxSize(), onEdit = { id ->
                     navController.navigate("project_edit" + (id?.let { "/$it" } ?: ""))

@@ -29,7 +29,12 @@ import com.predandrei.atelier.ui.viewmodel.FinanceViewModel
 import com.predandrei.atelier.util.CurrencyRon
 
 @Composable
-fun DashboardScreen(modifier: Modifier = Modifier) {
+fun DashboardScreen(
+    modifier: Modifier = Modifier,
+    onOpenProjects: () -> Unit = {},
+    onOpenInventory: () -> Unit = {},
+    onOpenFinance: () -> Unit = {},
+) {
     val invVm: InventoryViewModel = hiltViewModel()
     val projVm: ProjectsViewModel = hiltViewModel()
     val finVm: FinanceViewModel = hiltViewModel()
@@ -52,7 +57,13 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(cards) { item ->
-            ElevatedCard(onClick = { /* TODO: navigate */ }) {
+            val onClick = when (item.title) {
+                "Active projects" -> onOpenProjects
+                "Inventory alerts" -> onOpenInventory
+                "Profit" -> onOpenFinance
+                else -> ({})
+            }
+            ElevatedCard(onClick = onClick) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Icon(
                         imageVector = item.icon,
