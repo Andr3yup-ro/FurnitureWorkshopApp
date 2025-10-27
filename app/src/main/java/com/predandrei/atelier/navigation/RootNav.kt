@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -73,10 +74,10 @@ fun RootNav() {
         NavHost(
             navController = navController,
             startDestination = "dashboard",
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
             route = "root"
         ) {
-            composable("dashboard") { DashboardScreen(modifier = Modifier.fillMaxSize().padding(innerPadding)) }
+            composable("dashboard") { DashboardScreen(modifier = Modifier.fillMaxSize()) }
             composable("projects") { Text("Projects", modifier = Modifier.fillMaxSize()) }
             composable("clients") { Text("Clients", modifier = Modifier.fillMaxSize()) }
             composable("inventory") { Text("Inventory", modifier = Modifier.fillMaxSize()) }
