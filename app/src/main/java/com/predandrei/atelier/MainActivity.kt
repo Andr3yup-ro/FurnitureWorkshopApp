@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.fillMaxSize
 import dagger.hilt.android.AndroidEntryPoint
 import com.predandrei.atelier.navigation.RootNav
 
@@ -24,7 +25,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AtelierAppRoot() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
         // TODO: Navigation host and screens
         // Placeholder UI
         RootNav()
