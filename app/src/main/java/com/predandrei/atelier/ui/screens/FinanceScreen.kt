@@ -8,6 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.draw.background
 import com.predandrei.atelier.data.model.FinancialTransaction
 import com.predandrei.atelier.data.model.TransactionType
 import com.predandrei.atelier.ui.viewmodel.FinanceViewModel
@@ -16,6 +18,7 @@ import com.predandrei.atelier.util.CurrencyRon
 import java.time.LocalDate
 import java.time.YearMonth
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinanceScreen(modifier: Modifier = Modifier, vm: FinanceViewModel = hiltViewModel()) {
     val txs by vm.transactions.collectAsState()
