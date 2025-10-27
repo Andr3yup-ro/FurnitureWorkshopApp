@@ -106,5 +106,5 @@ dependencies {
 
 // Silence javac deprecation notes from generated sources (e.g., Hilt)
 tasks.withType<org.gradle.api.tasks.compile.JavaCompile>().configureEach {
-    options.compilerArgs.add("-Xlint:-deprecation")
+    options.compilerArgs.addAll(listOf("-nowarn", "-Xlint:-deprecation"))
 }
