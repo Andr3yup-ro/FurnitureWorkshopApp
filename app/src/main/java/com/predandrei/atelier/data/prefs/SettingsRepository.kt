@@ -1,7 +1,6 @@
 package com.predandrei.atelier.data.prefs
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -24,7 +23,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
     }
 
     suspend fun setLanguageTag(tag: String?) {
-        context.settingsDataStore.edit { prefs: Preferences ->
+        context.settingsDataStore.edit { prefs ->
             if (tag == null) prefs.remove(Keys.LANGUAGE) else prefs[Keys.LANGUAGE] = tag
         }
     }

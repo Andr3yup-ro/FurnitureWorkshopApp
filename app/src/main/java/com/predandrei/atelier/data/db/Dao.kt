@@ -81,6 +81,9 @@ interface PaymentDao {
     @Query("SELECT * FROM Installment WHERE planId = :planId")
     fun getInstallments(planId: Long): Flow<List<Installment>>
 
+    @Query("SELECT * FROM Installment")
+    fun getAllInstallments(): Flow<List<Installment>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertPlans(vararg plans: PaymentPlan)
 
@@ -92,6 +95,9 @@ interface PaymentDao {
 interface ProjectMaterialsDao {
     @Query("SELECT * FROM ProjectMaterialUsage WHERE projectId = :projectId ORDER BY date DESC")
     fun getByProject(projectId: Long): Flow<List<ProjectMaterialUsage>>
+
+    @Query("SELECT * FROM ProjectMaterialUsage")
+    fun getAll(): Flow<List<ProjectMaterialUsage>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(vararg usage: ProjectMaterialUsage)

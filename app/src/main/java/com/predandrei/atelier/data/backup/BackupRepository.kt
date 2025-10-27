@@ -26,7 +26,7 @@ class BackupRepository @Inject constructor(
         root.put("inventory", JSONArray(db.inventoryDao().getAll().first().map { it.toJson() }))
         root.put("finance", JSONArray(db.financeDao().getAll().first().map { it.toJson() }))
         root.put("payments", JSONArray(db.paymentDao().getPlans().first().map { it.toJson() }))
-        root.put("installments", JSONArray(db.paymentDao().getInstallments().first().map { it.toJson() }))
+        root.put("installments", JSONArray(db.paymentDao().getAllInstallments().first().map { it.toJson() }))
         root.put("materialsUsage", JSONArray(db.projectMaterialsDao().getAll().first().map { it.toJson() }))
 
         val f = file()
@@ -51,10 +51,10 @@ class BackupRepository @Inject constructor(
             for (i in 0 until arr.length()) db.projectDao().upsert(arr.getJSONObject(i).toProject())
         }
         root.optJSONArray("payments")?.let { arr ->
-            for (i in 0 until arr.length()) db.paymentDao().upsertPlan(arr.getJSONObject(i).toPaymentPlan())
+            for (i in 0 until arr.length()) db.paymentDao().upsertPlans(arr.getJSONObject(i).toPaymentPlan())
         }
         root.optJSONArray("installments")?.let { arr ->
-            for (i in 0 until arr.length()) db.paymentDao().upsertInstallment(arr.getJSONObject(i).toInstallment())
+            for (i in 0 until arr.length()) db.paymentDao().upsertInstallments(arr.getJSONObject(i).toInstallment())
         }
         root.optJSONArray("finance")?.let { arr ->
             for (i in 0 until arr.length()) db.financeDao().upsert(arr.getJSONObject(i).toFinancialTransaction())
