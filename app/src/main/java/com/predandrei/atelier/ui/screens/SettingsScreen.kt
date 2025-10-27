@@ -8,18 +8,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.core.os.LocaleListCompat
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.predandrei.atelier.ui.viewmodel.LanguageViewModel
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(vm: LanguageViewModel = hiltViewModel()) {
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Language")
-        Button(onClick = {
-            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("ro"))
-        }) { Text("Română") }
-        Button(onClick = {
-            AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
-        }) { Text("English") }
+        Button(onClick = { vm.setLanguage("ro") }) { Text("Română") }
+        Button(onClick = { vm.setLanguage(null) }) { Text("English") }
     }
 }

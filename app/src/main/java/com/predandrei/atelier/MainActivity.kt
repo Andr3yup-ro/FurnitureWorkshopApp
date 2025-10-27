@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.fillMaxSize
 import dagger.hilt.android.AndroidEntryPoint
 import com.predandrei.atelier.navigation.RootNav
+import com.predandrei.atelier.ui.AppLanguageApplier
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -29,8 +30,7 @@ fun AtelierAppRoot() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        // TODO: Navigation host and screens
-        // Placeholder UI
+        AppLanguageApplier()
         RootNav()
     }
 }
