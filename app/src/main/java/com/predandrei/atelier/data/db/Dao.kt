@@ -75,6 +75,9 @@ interface PaymentDao {
     @Query("SELECT * FROM PaymentPlan")
     fun getPlans(): Flow<List<PaymentPlan>>
 
+    @Query("SELECT * FROM PaymentPlan WHERE projectId = :projectId LIMIT 1")
+    suspend fun getPlanByProjectId(projectId: Long): PaymentPlan?
+
     @Query("SELECT * FROM Installment WHERE planId = :planId")
     fun getInstallments(planId: Long): Flow<List<Installment>>
 

@@ -16,17 +16,34 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.predandrei.atelier.ui.viewmodel.InventoryViewModel
+import com.predandrei.atelier.ui.viewmodel.ProjectsViewModel
+import com.predandrei.atelier.ui.viewmodel.FinanceViewModel
+import com.predandrei.atelier.util.CurrencyRon
 
 @Composable
 fun DashboardScreen(modifier: Modifier = Modifier) {
-    val items = listOf(
-        DashboardItem("Today", "3 tasks due, 1 overdue", Icons.Rounded.CheckCircle),
-        DashboardItem("Active projects", "5 projects in progress", Icons.Rounded.Work),
-        DashboardItem("Inventory alerts", "2 materials low stock", Icons.Rounded.Inventory2),
+    val invVm: InventoryViewModel = hiltViewModel()
+    val projVm: ProjectsViewModel = hiltViewModel()
+    val finVm: FinanceViewModel = hiltViewModel()
+
+    val items by invVm.items.collectAsState()
+    val lowStock = items.count { it.quantity <= it.minStock }
+    val projects by projVm.projects.collectAsState()
+    val activeProjects = projects.count { it.status.name == "IN_PROGRESS" }
+    val profit by finVm.profitRon.collectAsState()
+
+    val cards = listOf(
+        DashboardItem("Active projects", "$activeProjects in progress", Icons.Rounded.Work),
+        DashboardItem("Inventory alerts", "$lowStock low stock", Icons.Rounded.Inventory2),
+        DashboardItem("Profit", CurrencyRon.formatMinorUnits(profit), Icons.Rounded.CheckCircle),
     )
 
     LazyColumn(
@@ -34,7 +51,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(items) { item ->
+        items(cards) { item ->
             ElevatedCard(onClick = { /* TODO: navigate */ }) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Icon(
