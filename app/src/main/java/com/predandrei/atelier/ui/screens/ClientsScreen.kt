@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,13 +23,13 @@ import com.predandrei.atelier.ui.viewmodel.ClientsViewModel
 
 @Composable
 fun ClientsScreen(modifier: Modifier = Modifier, onEdit: (Long?) -> Unit = {}, vm: ClientsViewModel = hiltViewModel()) {
-    val clients by vm.clients
+    val clientList by vm.clients.collectAsState()
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(clients, key = { it.id }) { c ->
+        items(clientList, key = { it.id }) { c ->
             ClientRow(c, onClick = { onEdit(c.id) })
         }
     }

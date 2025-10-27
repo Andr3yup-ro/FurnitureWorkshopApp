@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,13 +23,13 @@ import com.predandrei.atelier.ui.viewmodel.InventoryViewModel
 
 @Composable
 fun InventoryScreen(modifier: Modifier = Modifier, onEdit: (Long?) -> Unit = {}, vm: InventoryViewModel = hiltViewModel()) {
-    val items by vm.items
+    val itemsList by vm.items.collectAsState()
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(items, key = { it.id }) { i ->
+        items(itemsList, key = { it.id }) { i ->
             InventoryRow(i, onClick = { onEdit(i.id) })
         }
     }
