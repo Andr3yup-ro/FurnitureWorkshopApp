@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MobilaPrestan</string>
+
+    <!-- Navigation labels -->
+    <string name="nav_dashboard">Panou</string>
+    <string name="nav_projects">Proiecte</string>
+    <string name="nav_clients">Clienți</string>
+    <string name="nav_inventory">Stoc</string>
+    <string name="nav_finance">Finanțe</string>
+    <string name="nav_payments">Plăți</string>
+    <string name="nav_settings">Setări</string>
+
+    <!-- Settings -->
+    <string name="language">Limbă</string>
+    <string name="english">Engleză</string>
+    <string name="romanian">Română</string>
+    <string name="toggle_language">Schimbă limba</string>
+
+    <!-- Dashboard -->
+    <string name="overview">Prezentare generală</string>
+    <string name="low_stock_alerts">Alerte stoc scăzut</string>
+    <string name="project_statuses">Starea proiectelor</string>
+    <string name="financial_summary">Rezumat financiar</string>
+</resources>
