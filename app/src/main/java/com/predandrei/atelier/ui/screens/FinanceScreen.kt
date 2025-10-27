@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.draw.background
+import androidx.compose.foundation.background
 import com.predandrei.atelier.data.model.FinancialTransaction
 import com.predandrei.atelier.data.model.TransactionType
 import com.predandrei.atelier.ui.viewmodel.FinanceViewModel
