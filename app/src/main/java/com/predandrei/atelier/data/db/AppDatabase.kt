@@ -13,9 +13,10 @@ import com.predandrei.atelier.data.model.*
         InventoryItem::class,
         FinancialTransaction::class,
         PaymentPlan::class,
-        Installment::class
+        Installment::class,
+        ProjectMaterialUsage::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(EnumConverters::class)

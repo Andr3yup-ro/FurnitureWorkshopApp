@@ -22,6 +22,7 @@ fun ProjectEditScreen(
     projectId: Long?,
     onSaved: () -> Unit,
     onManagePayments: (Long) -> Unit = {},
+    onManageMaterials: (Long) -> Unit = {},
     vm: ProjectsViewModel = hiltViewModel()
 ) {
     var title by remember { mutableStateOf("") }
@@ -103,6 +104,10 @@ fun ProjectEditScreen(
             Spacer(Modifier.height(8.dp))
             Button(onClick = { onManagePayments(projectId!!) }, enabled = true) {
                 Text("Manage Payments")
+            }
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = { onManageMaterials(projectId!!) }, enabled = true) {
+                Text("Manage Materials")
             }
         }
     }

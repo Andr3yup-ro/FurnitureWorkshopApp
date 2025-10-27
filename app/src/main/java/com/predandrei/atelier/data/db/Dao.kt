@@ -87,3 +87,12 @@ interface PaymentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertInstallments(vararg inst: Installment)
 }
+
+@Dao
+interface ProjectMaterialsDao {
+    @Query("SELECT * FROM ProjectMaterialUsage WHERE projectId = :projectId ORDER BY date DESC")
+    fun getByProject(projectId: Long): Flow<List<ProjectMaterialUsage>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(vararg usage: ProjectMaterialUsage)
+}

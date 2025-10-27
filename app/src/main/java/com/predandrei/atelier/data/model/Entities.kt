@@ -76,3 +76,12 @@ data class Installment(
     val paid: Boolean = false,
     val method: PaymentMethod = PaymentMethod.CASH
 )
+
+@Entity
+data class ProjectMaterialUsage(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val projectId: Long,
+    val inventoryItemId: Long,
+    val quantityUsed: Int,
+    val date: String // ISO date
+)

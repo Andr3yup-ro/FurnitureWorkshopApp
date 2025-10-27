@@ -34,11 +34,9 @@ fun FinanceScreen(modifier: Modifier = Modifier, vm: FinanceViewModel = hiltView
         var amountText by remember { mutableStateOf("") }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ExposedDropdownMenuBox(expanded = false, onExpandedChange = {}) {
-                // Simple toggle for brevity
-                Button(onClick = { type = if (type == TransactionType.REVENUE) TransactionType.EXPENSE else TransactionType.REVENUE }) {
-                    Text(type.name)
-                }
+            // Simple toggle
+            Button(onClick = { type = if (type == TransactionType.REVENUE) TransactionType.EXPENSE else TransactionType.REVENUE }) {
+                Text(type.name)
             }
             OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text("Category") })
             OutlinedTextField(value = amountText, onValueChange = { amountText = it.filter { ch -> ch.isDigit() } }, label = { Text("Amount (bani)") })

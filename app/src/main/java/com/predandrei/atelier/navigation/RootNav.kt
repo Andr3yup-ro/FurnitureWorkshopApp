@@ -35,6 +35,7 @@ import com.predandrei.atelier.ui.screens.InventoryScreen
 import com.predandrei.atelier.ui.screens.InventoryEditScreen
 import com.predandrei.atelier.ui.screens.FinanceScreen
 import com.predandrei.atelier.ui.screens.ProjectPaymentsScreen
+import com.predandrei.atelier.ui.screens.ProjectMaterialsScreen
 import com.predandrei.atelier.ui.screens.SettingsScreen
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.ui.platform.LocalContext
@@ -133,6 +134,10 @@ fun RootNav() {
                 val id = backStack.arguments?.getString("projectId")?.toLongOrNull() ?: 0L
                 ProjectPaymentsScreen(projectId = id, onDone = { navController.popBackStack() })
             }
+            composable("project_materials/{projectId}") { backStack ->
+                val id = backStack.arguments?.getString("projectId")?.toLongOrNull() ?: 0L
+                ProjectMaterialsScreen(projectId = id, onDone = { navController.popBackStack() })
+            }
             composable("settings") { SettingsScreen() }
 
             // Edit/Create routes (optional id)
@@ -141,7 +146,7 @@ fun RootNav() {
                 val id = backStack.arguments?.getString("id")?.toLongOrNull()
                 ProjectEditScreen(projectId = id, onSaved = { navController.popBackStack() }, onManagePayments = { pid ->
                     navController.navigate("project_payments/$pid")
-                })
+                }, onManageMaterials = { pid -> navController.navigate("project_materials/$pid") })
             }
             composable("client_edit") { ClientEditScreen(clientId = null, onSaved = { navController.popBackStack() }) }
             composable("client_edit/{id}") { backStack ->
