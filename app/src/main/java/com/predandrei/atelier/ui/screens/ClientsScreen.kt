@@ -30,7 +30,7 @@ fun ClientsScreen(modifier: Modifier = Modifier, onEdit: (Long?) -> Unit = {}, v
     val clientList by vm.clients.collectAsState()
     var query by remember { mutableStateOf("") }
     Column(modifier.fillMaxSize()) {
-        OutlinedTextField(value = query, onValueChange = { query = it }, label = { Text("Search clients") }, modifier = Modifier.padding(16.dp))
+        OutlinedTextField(value = query, onValueChange = { query = it }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.search_clients)) }, modifier = Modifier.padding(16.dp))
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),

@@ -30,9 +30,9 @@ fun FinanceScreen(modifier: Modifier = Modifier, vm: FinanceViewModel = hiltView
     val projects by projectsVm.projects.collectAsState()
 
     Column(modifier.fillMaxSize().padding(16.dp)) {
-        Text("Revenue: ${CurrencyRon.formatMinorUnits(revenue)}")
-        Text("Expenses: ${CurrencyRon.formatMinorUnits(expenses)}")
-        Text("Profit: ${CurrencyRon.formatMinorUnits(profit)}", color = MaterialTheme.colorScheme.primary)
+        Text(stringResource(id = com.predandrei.atelier.R.string.revenue_fmt, CurrencyRon.formatMinorUnits(revenue)))
+        Text(stringResource(id = com.predandrei.atelier.R.string.expenses_fmt, CurrencyRon.formatMinorUnits(expenses)))
+        Text(stringResource(id = com.predandrei.atelier.R.string.profit_fmt, CurrencyRon.formatMinorUnits(profit)), color = MaterialTheme.colorScheme.primary)
 
         Spacer(Modifier.height(12.dp))
         Divider()
@@ -48,19 +48,22 @@ fun FinanceScreen(modifier: Modifier = Modifier, vm: FinanceViewModel = hiltView
         var endDate by remember { mutableStateOf("") }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Simple toggle
+            // Type toggle
             Button(onClick = { type = if (type == TransactionType.REVENUE) TransactionType.EXPENSE else TransactionType.REVENUE }) {
-                Text(type.name)
+                Text(if (type == TransactionType.REVENUE) stringResource(id = com.predandrei.atelier.R.string.revenue) else stringResource(id = com.predandrei.atelier.R.string.expense))
             }
-            OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text("Category") })
-            OutlinedTextField(value = amountText, onValueChange = { amountText = it.filter { ch -> ch.isDigit() } }, label = { Text("Amount (bani)") })
+            OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.category)) })
+            OutlinedTextField(value = amountText, onValueChange = { amountText = amountText.replace(',', '.').filter { it.isDigit() || it == '.' }.let { t ->
+                val first = t.indexOf('.')
+                if (first == -1) t else t.substring(0, first + 1) + t.substring(first + 1).replace(".", "")
+            } }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.amount_ron)) })
             Button(onClick = {
-                val amt = amountText.toLongOrNull() ?: 0L
+                val amt = com.predandrei.atelier.util.MoneyParser.toMinorUnits(amountText)
                 if (amt > 0) vm.save(
-                    FinancialTransaction(projectId = null, type = type, category = category.ifBlank { "GENERAL" }, amountRon = amt, date = java.time.LocalDate.now().toString())
+                    FinancialTransaction(projectId = selectedProjectId, type = type, category = category.ifBlank { if (type == TransactionType.REVENUE) "REVENUE" else "EXPENSE" }, amountRon = amt, date = java.time.LocalDate.now().toString())
                 )
                 amountText = ""; category = ""
-            }) { Text("Add") }
+            }) { Text(stringResource(id = com.predandrei.atelier.R.string.add)) }
         }
 
         Spacer(Modifier.height(12.dp))
@@ -69,21 +72,21 @@ fun FinanceScreen(modifier: Modifier = Modifier, vm: FinanceViewModel = hiltView
         ExposedDropdownMenuBox(expanded = projExpanded, onExpandedChange = { projExpanded = !projExpanded }) {
             OutlinedTextField(
                 readOnly = true,
-                value = selectedProjectId?.let { id -> projects.firstOrNull { it.id == id }?.title } ?: "All projects",
+                value = selectedProjectId?.let { id -> projects.firstOrNull { it.id == id }?.title } ?: stringResource(id = com.predandrei.atelier.R.string.all_projects),
                 onValueChange = {},
-                label = { Text("Project filter") },
+                label = { Text(stringResource(id = com.predandrei.atelier.R.string.project_filter)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = projExpanded) },
                 modifier = Modifier.menuAnchor()
             )
             ExposedDropdownMenu(expanded = projExpanded, onDismissRequest = { projExpanded = false }) {
-                DropdownMenuItem(text = { Text("All projects") }, onClick = { selectedProjectId = null; projExpanded = false })
+                DropdownMenuItem(text = { Text(stringResource(id = com.predandrei.atelier.R.string.all_projects)) }, onClick = { selectedProjectId = null; projExpanded = false })
                 projects.forEach { p -> DropdownMenuItem(text = { Text(p.title) }, onClick = { selectedProjectId = p.id; projExpanded = false }) }
             }
         }
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(value = startDate, onValueChange = { startDate = it }, label = { Text("Start YYYY-MM-DD") })
-            OutlinedTextField(value = endDate, onValueChange = { endDate = it }, label = { Text("End YYYY-MM-DD") })
+            OutlinedTextField(value = startDate, onValueChange = { startDate = it }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.start_date)) })
+            OutlinedTextField(value = endDate, onValueChange = { endDate = it }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.end_date)) })
         }
 
         val filtered = remember(txs, selectedProjectId, startDate, endDate, category) {
@@ -96,7 +99,7 @@ fun FinanceScreen(modifier: Modifier = Modifier, vm: FinanceViewModel = hiltView
         }
 
         Spacer(Modifier.height(12.dp))
-        Text("Overview (last 6 months)", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(id = com.predandrei.atelier.R.string.overview_6m), style = MaterialTheme.typography.titleSmall)
         val months = (0..5).map { YearMonth.now().minusMonths(it.toLong()) }.reversed()
         val monthTotals = months.map { ym ->
             val rev = filtered.filter { it.type == TransactionType.REVENUE && it.date.startsWith(ym.toString()) }.sumOf { it.amountRon }
@@ -121,10 +124,41 @@ fun FinanceScreen(modifier: Modifier = Modifier, vm: FinanceViewModel = hiltView
                 }
             }
         }
+        // Project breakdown
+        Spacer(Modifier.height(12.dp))
+        Text(stringResource(id = com.predandrei.atelier.R.string.project_breakdown), style = MaterialTheme.typography.titleMedium)
+        val inv by vm.inventory.collectAsState()
+        val usage by vm.materialUsages.collectAsState()
+        val materialsCost = remember(selectedProjectId, inv, usage) {
+            if (selectedProjectId == null) 0L else usage.filter { it.projectId == selectedProjectId }.sumOf { u ->
+                (inv.firstOrNull { it.id == u.inventoryItemId }?.priceRon ?: 0L) * u.quantityUsed
+            }
+        }
+        val projectValue = selectedProjectId?.let { id -> projects.firstOrNull { it.id == id }?.valueRon } ?: 0L
+        val paidForProject = remember(txs, selectedProjectId) {
+            if (selectedProjectId == null) 0L else txs.filter { it.projectId == selectedProjectId && it.type == TransactionType.REVENUE }.sumOf { it.amountRon }
+        }
+        // Labor/Overhead: sum expenses by category
+        val laborCost = remember(txs, selectedProjectId) { if (selectedProjectId == null) 0L else txs.filter { it.projectId == selectedProjectId && it.type == TransactionType.EXPENSE && it.category.equals("LABOR", true) }.sumOf { it.amountRon } }
+        val overheadCost = remember(txs, selectedProjectId) { if (selectedProjectId == null) 0L else txs.filter { it.projectId == selectedProjectId && it.type == TransactionType.EXPENSE && it.category.equals("OVERHEAD", true) }.sumOf { it.amountRon } }
+        val remaining = (projectValue - paidForProject).coerceAtLeast(0)
+        if (selectedProjectId != null) {
+            Spacer(Modifier.height(8.dp))
+            ElevatedCard { Column(Modifier.padding(12.dp)) {
+                Text(stringResource(id = com.predandrei.atelier.R.string.materials_cost_fmt, CurrencyRon.formatMinorUnits(materialsCost)))
+                Text(stringResource(id = com.predandrei.atelier.R.string.labor_cost_fmt, CurrencyRon.formatMinorUnits(laborCost)))
+                Text(stringResource(id = com.predandrei.atelier.R.string.overhead_cost_fmt, CurrencyRon.formatMinorUnits(overheadCost)))
+                Divider(Modifier.padding(vertical = 6.dp))
+                Text(stringResource(id = com.predandrei.atelier.R.string.paid_fmt, CurrencyRon.formatMinorUnits(paidForProject)))
+                Text(stringResource(id = com.predandrei.atelier.R.string.remaining_fmt, CurrencyRon.formatMinorUnits(remaining)))
+            } }
+        }
+
+        Spacer(Modifier.height(12.dp))
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(filtered, key = { it.id }) { t ->
                 ListItem(
-                    headlineContent = { Text("${t.type.name} • ${t.category}") },
+                    headlineContent = { Text("${if (t.type == TransactionType.REVENUE) stringResource(id = com.predandrei.atelier.R.string.revenue) else stringResource(id = com.predandrei.atelier.R.string.expense)} • ${t.category}") },
                     supportingContent = { Text(t.date) },
                     trailingContent = { Text(CurrencyRon.formatMinorUnits(t.amountRon)) }
                 )

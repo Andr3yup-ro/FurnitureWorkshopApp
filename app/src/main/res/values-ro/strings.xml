@@ -22,10 +22,61 @@
     <string name="inventory_management">Administrare stoc</string>
     <string name="manage_categories">Gestionează categorii</string>
     <string name="manage_suppliers">Gestionează furnizori</string>
+    <string name="name">Nume</string>
+    <string name="no_category">Fără categorie</string>
+    <string name="supplier">Furnizor</string>
+    <string name="no_supplier">Fără furnizor</string>
+    <string name="part_number">Cod piesă</string>
+    <string name="description">Descriere</string>
 
     <!-- Dashboard -->
     <string name="overview">Prezentare generală</string>
     <string name="low_stock_alerts">Alerte stoc scăzut</string>
     <string name="project_statuses">Starea proiectelor</string>
     <string name="financial_summary">Rezumat financiar</string>
+    <!-- Common -->
+    <string name="save">Salvează</string>
+    <string name="delete">Șterge</string>
+    <string name="cancel">Anulează</string>
+    <string name="done">Gata</string>
+    <string name="add">Adaugă</string>
+    <string name="quantity">Cantitate</string>
+    <string name="min_stock">Stoc minim</string>
+    <string name="price_ron">Preț (RON)</string>
+    <string name="delete_item_q">Ștergi articolul?</string>
+    <string name="delete_project_q">Ștergi proiectul?</string>
+    <string name="action_cannot_undone">Acțiunea nu poate fi anulată.</string>
+    <string name="project_value_ron">Valoare proiect (RON)</string>
+    <string name="manage_payments">Gestionează plățile</string>
+    <string name="manage_materials">Gestionează materialele</string>
+    <string name="search_clients">Caută clienți</string>
+    <!-- Payments -->
+    <string name="payment_plan">Plan de plată</string>
+    <string name="total_ron">Total (RON)</string>
+    <string name="advance_ron">Avans (RON)</string>
+    <string name="save_plan">Salvează planul</string>
+    <string name="installments">Rate</string>
+    <string name="due_date">Scadență (AAAA-LL-ZZ)</string>
+    <string name="amount_ron">Sumă (RON)</string>
+    <string name="paid">PLĂTIT</string>
+    <string name="unpaid">NEPLĂTIT</string>
+    <string name="mark_paid">Marchează plătit</string>
+    <!-- Finance -->
+    <string name="revenue">Venit</string>
+    <string name="expense">Cheltuială</string>
+    <string name="category">Categorie</string>
+    <string name="all_projects">Toate proiectele</string>
+    <string name="project_filter">Filtru proiect</string>
+    <string name="start_date">Start AAAA-LL-ZZ</string>
+    <string name="end_date">Sfârșit AAAA-LL-ZZ</string>
+    <string name="overview_6m">Prezentare (ultimele 6 luni)</string>
+    <string name="project_breakdown">Detaliu proiect</string>
+    <string name="revenue_fmt">Venit: %1$s</string>
+    <string name="expenses_fmt">Cheltuieli: %1$s</string>
+    <string name="profit_fmt">Profit: %1$s</string>
+    <string name="materials_cost_fmt">Materiale: %1$s</string>
+    <string name="labor_cost_fmt">Manoperă: %1$s</string>
+    <string name="overhead_cost_fmt">Cheltuieli generale: %1$s</string>
+    <string name="paid_fmt">Plătit: %1$s</string>
+    <string name="remaining_fmt">Rămas: %1$s</string>
 </resources>

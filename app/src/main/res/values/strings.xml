@@ -22,10 +22,61 @@
     <string name="inventory_management">Inventory management</string>
     <string name="manage_categories">Manage categories</string>
     <string name="manage_suppliers">Manage suppliers</string>
+    <string name="name">Name</string>
+    <string name="no_category">No category</string>
+    <string name="supplier">Supplier</string>
+    <string name="no_supplier">No supplier</string>
+    <string name="part_number">Part number</string>
+    <string name="description">Description</string>
 
     <!-- Dashboard -->
     <string name="overview">Overview</string>
     <string name="low_stock_alerts">Low stock alerts</string>
     <string name="project_statuses">Project statuses</string>
     <string name="financial_summary">Financial summary</string>
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="add">Add</string>
+    <string name="quantity">Quantity</string>
+    <string name="min_stock">Min stock</string>
+    <string name="price_ron">Price (RON)</string>
+    <string name="delete_item_q">Delete item?</string>
+    <string name="delete_project_q">Delete project?</string>
+    <string name="action_cannot_undone">This action cannot be undone.</string>
+    <string name="project_value_ron">Project value (RON)</string>
+    <string name="manage_payments">Manage Payments</string>
+    <string name="manage_materials">Manage Materials</string>
+    <string name="search_clients">Search clients</string>
+    <!-- Payments -->
+    <string name="payment_plan">Payment Plan</string>
+    <string name="total_ron">Total (RON)</string>
+    <string name="advance_ron">Advance (RON)</string>
+    <string name="save_plan">Save Plan</string>
+    <string name="installments">Installments</string>
+    <string name="due_date">Due date (YYYY-MM-DD)</string>
+    <string name="amount_ron">Amount (RON)</string>
+    <string name="paid">PAID</string>
+    <string name="unpaid">UNPAID</string>
+    <string name="mark_paid">Mark paid</string>
+    <!-- Finance -->
+    <string name="revenue">Revenue</string>
+    <string name="expense">Expense</string>
+    <string name="category">Category</string>
+    <string name="all_projects">All projects</string>
+    <string name="project_filter">Project filter</string>
+    <string name="start_date">Start YYYY-MM-DD</string>
+    <string name="end_date">End YYYY-MM-DD</string>
+    <string name="overview_6m">Overview (last 6 months)</string>
+    <string name="project_breakdown">Project breakdown</string>
+    <string name="revenue_fmt">Revenue: %1$s</string>
+    <string name="expenses_fmt">Expenses: %1$s</string>
+    <string name="profit_fmt">Profit: %1$s</string>
+    <string name="materials_cost_fmt">Materials: %1$s</string>
+    <string name="labor_cost_fmt">Labor: %1$s</string>
+    <string name="overhead_cost_fmt">Overhead: %1$s</string>
+    <string name="paid_fmt">Paid: %1$s</string>
+    <string name="remaining_fmt">Remaining: %1$s</string>
 </resources>
