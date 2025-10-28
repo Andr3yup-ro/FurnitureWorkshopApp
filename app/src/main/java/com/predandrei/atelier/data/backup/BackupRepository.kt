@@ -23,6 +23,8 @@ class BackupRepository @Inject constructor(
         val root = JSONObject()
         root.put("clients", JSONArray(db.clientDao().getAll().first().map { it.toJson() }))
         root.put("projects", JSONArray(db.projectDao().getAll().first().map { it.toJson() }))
+        root.put("categories", JSONArray(db.categoryDao().getAll().first().map { it.toJson() }))
+        root.put("suppliers", JSONArray(db.supplierDao().getAll().first().map { it.toJson() }))
         root.put("inventory", JSONArray(db.inventoryDao().getAll().first().map { it.toJson() }))
         root.put("finance", JSONArray(db.financeDao().getAll().first().map { it.toJson() }))
         root.put("payments", JSONArray(db.paymentDao().getPlans().first().map { it.toJson() }))
@@ -43,6 +45,12 @@ class BackupRepository @Inject constructor(
         // Upsert in a safe order
         root.optJSONArray("clients")?.let { arr ->
             for (i in 0 until arr.length()) db.clientDao().upsert(arr.getJSONObject(i).toClient())
+        }
+        root.optJSONArray("categories")?.let { arr ->
+            for (i in 0 until arr.length()) db.categoryDao().upsert(arr.getJSONObject(i).toCategory())
+        }
+        root.optJSONArray("suppliers")?.let { arr ->
+            for (i in 0 until arr.length()) db.supplierDao().upsert(arr.getJSONObject(i).toSupplier())
         }
         root.optJSONArray("inventory")?.let { arr ->
             for (i in 0 until arr.length()) db.inventoryDao().upsert(arr.getJSONObject(i).toInventoryItem())
@@ -86,12 +94,20 @@ private fun JSONObject.toProject() = Project(
 )
 
 private fun InventoryItem.toJson() = JSONObject().apply {
-    put("id", id); put("name", name); put("category", category.name); put("quantity", quantity); put("minStock", minStock); put("supplierId", supplierId)
+    put("id", id); put("name", name); put("categoryId", categoryId); put("quantity", quantity); put("priceRon", priceRon)
+    put("partNumber", partNumber); put("description", description); put("minStock", minStock); put("supplierId", supplierId)
 }
 private fun JSONObject.toInventoryItem() = InventoryItem(
-    id = optLong("id"), name = getString("name"), category = InventoryCategory.valueOf(getString("category")),
-    quantity = optInt("quantity"), minStock = optInt("minStock"), supplierId = if (has("supplierId") && !isNull("supplierId")) optLong("supplierId") else null
+    id = optLong("id"), name = getString("name"), categoryId = if (has("categoryId") && !isNull("categoryId")) optLong("categoryId") else null,
+    quantity = optInt("quantity"), priceRon = optLong("priceRon"), partNumber = optString("partNumber").takeIf { it.isNotBlank() },
+    description = optString("description").takeIf { it.isNotBlank() }, minStock = optInt("minStock"), supplierId = if (has("supplierId") && !isNull("supplierId")) optLong("supplierId") else null
 )
+
+private fun Supplier.toJson() = JSONObject().apply { put("id", id); put("name", name); put("contact", contact) }
+private fun JSONObject.toSupplier() = Supplier(id = optLong("id"), name = getString("name"), contact = optString("contact").takeIf { it.isNotBlank() })
+
+private fun Category.toJson() = JSONObject().apply { put("id", id); put("name", name) }
+private fun JSONObject.toCategory() = Category(id = optLong("id"), name = getString("name"))
 
 private fun FinancialTransaction.toJson() = JSONObject().apply {
     put("id", id); put("projectId", projectId); put("type", type.name); put("category", category); put("amountRon", amountRon); put("date", date)

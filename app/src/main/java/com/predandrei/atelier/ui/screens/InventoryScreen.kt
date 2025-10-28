@@ -24,10 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.predandrei.atelier.data.model.InventoryItem
 import com.predandrei.atelier.ui.viewmodel.InventoryViewModel
+import com.predandrei.atelier.ui.viewmodel.CategoriesViewModel
 
 @Composable
 fun InventoryScreen(modifier: Modifier = Modifier, onEdit: (Long?) -> Unit = {}, vm: InventoryViewModel = hiltViewModel()) {
     val itemsList by vm.items.collectAsState()
+    val catVm: CategoriesViewModel = hiltViewModel()
+    val cats by catVm.categories.collectAsState()
     var query by remember { mutableStateOf("") }
     Column(modifier.fillMaxSize()) {
         OutlinedTextField(value = query, onValueChange = { query = it }, label = { Text("Search inventory") }, modifier = Modifier.padding(16.dp))
@@ -36,20 +39,27 @@ fun InventoryScreen(modifier: Modifier = Modifier, onEdit: (Long?) -> Unit = {},
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val filtered = itemsList.filter { it.name.contains(query, true) || it.category.name.contains(query, true) }
+            val filtered = itemsList.filter {
+                val catName = cats.firstOrNull { c -> c.id == it.categoryId }?.name.orEmpty()
+                it.name.contains(query, true) || catName.contains(query, true)
+            }
             items(filtered, key = { it.id }) { i ->
-                InventoryRow(i, onClick = { onEdit(i.id) })
+                val catName = cats.firstOrNull { c -> c.id == i.categoryId }?.name
+                InventoryRow(i, catName, onClick = { onEdit(i.id) })
             }
         }
     }
 }
 
 @Composable
-private fun InventoryRow(i: InventoryItem, onClick: () -> Unit) {
+private fun InventoryRow(i: InventoryItem, catName: String?, onClick: () -> Unit) {
     ElevatedCard(modifier = Modifier.clickable { onClick() }) {
         Column(Modifier.padding(16.dp)) {
             Text(i.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text("Qty: ${i.quantity}", style = MaterialTheme.typography.bodyMedium)
+            if (!catName.isNullOrBlank()) {
+                Text("Category: $catName", style = MaterialTheme.typography.bodySmall)
+            }
         }
     }
 }

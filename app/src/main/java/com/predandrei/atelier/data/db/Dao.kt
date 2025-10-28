@@ -59,6 +59,27 @@ interface SupplierDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(vararg suppliers: Supplier)
+
+    @Query("SELECT * FROM Supplier WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): Supplier?
+
+    @Query("DELETE FROM Supplier WHERE id = :id")
+    suspend fun delete(id: Long)
+}
+
+@Dao
+interface CategoryDao {
+    @Query("SELECT * FROM Category ORDER BY name")
+    fun getAll(): Flow<List<Category>>
+
+    @Query("SELECT * FROM Category WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): Category?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(vararg c: Category)
+
+    @Query("DELETE FROM Category WHERE id = :id")
+    suspend fun delete(id: Long)
 }
 
 @Dao

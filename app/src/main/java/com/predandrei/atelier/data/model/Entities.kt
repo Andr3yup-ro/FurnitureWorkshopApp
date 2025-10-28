@@ -26,7 +26,11 @@ data class Project(
     val deadline: String? // ISO date string
 )
 
-enum class InventoryCategory { CHAIRS, TABLES, SOFAS, CABINETS, ACCESSORIES }
+@Entity
+data class Category(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val name: String
+)
 
 @Entity
 data class Supplier(
@@ -39,8 +43,11 @@ data class Supplier(
 data class InventoryItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
-    val category: InventoryCategory,
+    val categoryId: Long?,
     val quantity: Int,
+    val priceRon: Long = 0,
+    val partNumber: String?,
+    val description: String?,
     val minStock: Int = 0,
     val supplierId: Long?
 )
