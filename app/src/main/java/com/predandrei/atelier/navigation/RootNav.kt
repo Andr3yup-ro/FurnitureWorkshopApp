@@ -14,6 +14,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -44,19 +45,21 @@ import com.predandrei.atelier.ui.screens.SupplierEditScreen
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
+import androidx.compose.ui.res.stringResource
+import com.predandrei.atelier.R
 
 private data class Destination(
     val route: String,
-    val label: String,
+    val labelRes: Int,
     val icon: androidx.compose.ui.graphics.vector.ImageVector
 )
 
 private val bottomDestinations = listOf(
-    Destination("dashboard", "Dashboard", Icons.Rounded.Dashboard),
-    Destination("projects", "Projects", Icons.Rounded.Work),
-    Destination("inventory", "Inventory", Icons.Rounded.Inventory2),
-    Destination("clients", "Clients", Icons.Rounded.Person),
-    Destination("settings", "Settings", Icons.Rounded.Settings),
+    Destination("dashboard", R.string.nav_dashboard, Icons.Rounded.Dashboard),
+    Destination("projects", R.string.nav_projects, Icons.Rounded.Work),
+    Destination("inventory", R.string.nav_inventory, Icons.Rounded.Inventory2),
+    Destination("clients", R.string.nav_clients, Icons.Rounded.Person),
+    Destination("settings", R.string.nav_settings, Icons.Rounded.Settings),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,8 +70,23 @@ fun RootNav() {
     val currentDestination = backStackEntry?.destination
     val currentRoute = currentDestination?.route ?: bottomDestinations.first().route
 
+    val isBottom = bottomDestinations.any { it.route == currentRoute }
     Scaffold(
-        topBar = { TopAppBar(title = { Text(currentRoute.replaceFirstChar { it.uppercase() }) }) },
+        topBar = { TopAppBar(
+            title = {
+                val titleRes = bottomDestinations.firstOrNull { it.route == currentRoute }?.labelRes
+                if (titleRes != null) Text(stringResource(titleRes)) else Text(currentRoute.replaceFirstChar { it.uppercase() })
+            },
+            navigationIcon = {
+                if (!isBottom) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier.clickable { navController.navigateUp() }
+                    )
+                }
+            }
+        ) },
         bottomBar = {
             NavigationBar {
                 bottomDestinations.forEach { dest ->
@@ -82,8 +100,8 @@ fun RootNav() {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(dest.icon, contentDescription = dest.label) },
-                        label = { Text(dest.label) }
+                        icon = { Icon(dest.icon, contentDescription = stringResource(dest.labelRes)) },
+                        label = { Text(stringResource(dest.labelRes)) }
                     )
                 }
             }
@@ -132,10 +150,6 @@ fun RootNav() {
                     navController.navigate("inventory_edit" + (id?.let { "/$it" } ?: ""))
                 })
             }
-            composable("settings") { SettingsScreen(
-                onOpenCategories = { navController.navigate("categories") },
-                onOpenSuppliers = { navController.navigate("suppliers") }
-            ) }
             composable("finance") { FinanceScreen(modifier = Modifier.fillMaxSize()) }
             composable("project_payments/{projectId}") { backStack ->
                 val id = backStack.arguments?.getString("projectId")?.toLongOrNull() ?: 0L

@@ -16,6 +16,12 @@
     <string name="english">Engleză</string>
     <string name="romanian">Română</string>
     <string name="toggle_language">Schimbă limba</string>
+    <string name="backup">Backup</string>
+    <string name="backup_to_file">Backup în fișier</string>
+    <string name="restore_from_backup">Restaurează din backup</string>
+    <string name="inventory_management">Administrare stoc</string>
+    <string name="manage_categories">Gestionează categorii</string>
+    <string name="manage_suppliers">Gestionează furnizori</string>
 
     <!-- Dashboard -->
     <string name="overview">Prezentare generală</string>
