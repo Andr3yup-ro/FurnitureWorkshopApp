@@ -16,7 +16,12 @@ import com.predandrei.atelier.ui.viewmodel.BackupViewModel
 import androidx.compose.runtime.collectAsState
 
 @Composable
-fun SettingsScreen(vm: LanguageViewModel = hiltViewModel(), backupVm: BackupViewModel = hiltViewModel()) {
+fun SettingsScreen(
+    vm: LanguageViewModel = hiltViewModel(),
+    backupVm: BackupViewModel = hiltViewModel(),
+    onOpenCategories: () -> Unit = {},
+    onOpenSuppliers: () -> Unit = {}
+) {
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Language")
         Button(onClick = { vm.setLanguage("ro") }) { Text("Română") }
@@ -28,5 +33,10 @@ fun SettingsScreen(vm: LanguageViewModel = hiltViewModel(), backupVm: BackupView
         Button(onClick = { backupVm.restore() }) { Text("Restore from backup") }
         val status = backupVm.status.collectAsState().value
         status?.let { Text(it) }
+
+        Spacer(Modifier.height(24.dp))
+        Text("Inventory management")
+        Button(onClick = onOpenCategories) { Text("Manage categories") }
+        Button(onClick = onOpenSuppliers) { Text("Manage suppliers") }
     }
 }

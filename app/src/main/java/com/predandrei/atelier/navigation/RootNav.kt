@@ -37,6 +37,10 @@ import com.predandrei.atelier.ui.screens.FinanceScreen
 import com.predandrei.atelier.ui.screens.ProjectPaymentsScreen
 import com.predandrei.atelier.ui.screens.ProjectMaterialsScreen
 import com.predandrei.atelier.ui.screens.SettingsScreen
+import com.predandrei.atelier.ui.screens.CategoriesScreen
+import com.predandrei.atelier.ui.screens.CategoryEditScreen
+import com.predandrei.atelier.ui.screens.SuppliersScreen
+import com.predandrei.atelier.ui.screens.SupplierEditScreen
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
@@ -128,7 +132,10 @@ fun RootNav() {
                     navController.navigate("inventory_edit" + (id?.let { "/$it" } ?: ""))
                 })
             }
-            composable("settings") { Text("Settings", modifier = Modifier.fillMaxSize()) }
+            composable("settings") { SettingsScreen(
+                onOpenCategories = { navController.navigate("categories") },
+                onOpenSuppliers = { navController.navigate("suppliers") }
+            ) }
             composable("finance") { FinanceScreen(modifier = Modifier.fillMaxSize()) }
             composable("project_payments/{projectId}") { backStack ->
                 val id = backStack.arguments?.getString("projectId")?.toLongOrNull() ?: 0L
@@ -138,7 +145,22 @@ fun RootNav() {
                 val id = backStack.arguments?.getString("projectId")?.toLongOrNull() ?: 0L
                 ProjectMaterialsScreen(projectId = id, onDone = { navController.popBackStack() })
             }
-            composable("settings") { SettingsScreen() }
+            composable("settings") { SettingsScreen(
+                onOpenCategories = { navController.navigate("categories") },
+                onOpenSuppliers = { navController.navigate("suppliers") }
+            ) }
+            composable("categories") { CategoriesScreen(onEdit = { id -> navController.navigate("category_edit" + (id?.let { "/$it" } ?: "")) }) }
+            composable("category_edit") { CategoryEditScreen(categoryId = null, onSaved = { navController.popBackStack() }) }
+            composable("category_edit/{id}") { backStack ->
+                val id = backStack.arguments?.getString("id")?.toLongOrNull()
+                CategoryEditScreen(categoryId = id, onSaved = { navController.popBackStack() })
+            }
+            composable("suppliers") { SuppliersScreen(onEdit = { id -> navController.navigate("supplier_edit" + (id?.let { "/$it" } ?: "")) }) }
+            composable("supplier_edit") { SupplierEditScreen(supplierId = null, onSaved = { navController.popBackStack() }) }
+            composable("supplier_edit/{id}") { backStack ->
+                val id = backStack.arguments?.getString("id")?.toLongOrNull()
+                SupplierEditScreen(supplierId = id, onSaved = { navController.popBackStack() })
+            }
 
             // Edit/Create routes (optional id)
             composable("project_edit") { ProjectEditScreen(projectId = null, onSaved = { navController.popBackStack() }) }

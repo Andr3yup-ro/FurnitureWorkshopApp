@@ -10,13 +10,14 @@ import com.predandrei.atelier.data.model.*
         Client::class,
         Project::class,
         Supplier::class,
+        Category::class,
         InventoryItem::class,
         FinancialTransaction::class,
         PaymentPlan::class,
         Installment::class,
         ProjectMaterialUsage::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(EnumConverters::class)
@@ -24,6 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun clientDao(): ClientDao
     abstract fun projectDao(): ProjectDao
     abstract fun supplierDao(): SupplierDao
+    abstract fun categoryDao(): CategoryDao
     abstract fun inventoryDao(): InventoryDao
     abstract fun financeDao(): FinanceDao
     abstract fun paymentDao(): PaymentDao
