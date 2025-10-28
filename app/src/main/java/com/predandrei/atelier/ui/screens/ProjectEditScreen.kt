@@ -39,7 +39,7 @@ fun ProjectEditScreen(
                 title = p.title
                 description = p.description.orEmpty()
                 selectedClientId = p.clientId.takeIf { it != 0L }
-                valueRonText = p.valueRon.toString()
+                valueRonText = String.format("%.2f", p.valueRon / 100.0)
                 status = p.status
             }
         }
@@ -71,7 +71,10 @@ fun ProjectEditScreen(
             }
         }
         Spacer(Modifier.height(8.dp))
-        OutlinedTextField(value = valueRonText, onValueChange = { valueRonText = it.filter { ch -> ch.isDigit() } }, label = { Text("Value (RON bani)") })
+        OutlinedTextField(value = valueRonText, onValueChange = { valueRonText = it.replace(',', '.').filter { it.isDigit() || it == '.' }.let { t ->
+            val first = t.indexOf('.')
+            if (first == -1) t else t.substring(0, first + 1) + t.substring(first + 1).replace(".", "")
+        } }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.project_value_ron)) })
         Spacer(Modifier.height(8.dp))
         Text("Status: ${status.name}")
         var expanded by remember { mutableStateOf(false) }
@@ -84,7 +87,7 @@ fun ProjectEditScreen(
         Spacer(Modifier.height(16.dp))
         Button(onClick = {
             val clientId = selectedClientId ?: 0L
-            val valueRon = valueRonText.toLongOrNull() ?: 0L
+            val valueRon = com.predandrei.atelier.util.MoneyParser.toMinorUnits(valueRonText)
             val p = Project(
                 id = projectId ?: 0L,
                 clientId = clientId,
@@ -98,29 +101,29 @@ fun ProjectEditScreen(
                 vm.save(p)
                 onSaved()
             }
-        }) { Text("Save") }
+        }) { Text(stringResource(id = com.predandrei.atelier.R.string.save)) }
 
         if ((projectId ?: 0L) > 0) {
             Spacer(Modifier.height(8.dp))
             Button(onClick = { onManagePayments(projectId!!) }, enabled = true) {
-                Text("Manage Payments")
+                Text(stringResource(id = com.predandrei.atelier.R.string.manage_payments))
             }
             Spacer(Modifier.height(8.dp))
             Button(onClick = { onManageMaterials(projectId!!) }, enabled = true) {
-                Text("Manage Materials")
+                Text(stringResource(id = com.predandrei.atelier.R.string.manage_materials))
             }
             Spacer(Modifier.height(16.dp))
             var confirm by remember { mutableStateOf(false) }
             if (confirm) {
                 AlertDialog(
                     onDismissRequest = { confirm = false },
-                    confirmButton = { TextButton(onClick = { scope.launch { vm.delete(projectId!!); onSaved() } }) { Text("Delete") } },
-                    dismissButton = { TextButton(onClick = { confirm = false }) { Text("Cancel") } },
-                    title = { Text("Delete project?") },
-                    text = { Text("This action cannot be undone.") }
+                    confirmButton = { TextButton(onClick = { scope.launch { vm.delete(projectId!!); onSaved() } }) { Text(stringResource(id = com.predandrei.atelier.R.string.delete)) } },
+                    dismissButton = { TextButton(onClick = { confirm = false }) { Text(stringResource(id = com.predandrei.atelier.R.string.cancel)) } },
+                    title = { Text(stringResource(id = com.predandrei.atelier.R.string.delete_project_q)) },
+                    text = { Text(stringResource(id = com.predandrei.atelier.R.string.action_cannot_undone)) }
                 )
             }
-            OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error), onClick = { confirm = true }) { Text("Delete") }
+            OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error), onClick = { confirm = true }) { Text(stringResource(id = com.predandrei.atelier.R.string.delete)) }
         }
     }
 }

@@ -19,7 +19,8 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
     }
 
     val languageTag: Flow<String?> = context.settingsDataStore.data.map { prefs ->
-        prefs[Keys.LANGUAGE]
+        // Default to Romanian if not set
+        prefs[Keys.LANGUAGE] ?: "ro"
     }
 
     suspend fun setLanguageTag(tag: String?) {

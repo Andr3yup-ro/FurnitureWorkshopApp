@@ -25,7 +25,26 @@ class PaymentsViewModel @Inject constructor(
     fun installments(planId: Long) = db.paymentDao().getInstallments(planId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun upsertPlan(plan: PaymentPlan) { viewModelScope.launch { db.paymentDao().upsertPlans(plan) } }
+    fun upsertPlan(plan: PaymentPlan) {
+        viewModelScope.launch {
+            val existing = db.paymentDao().getPlanByProjectId(plan.projectId)
+            db.paymentDao().upsertPlans(plan)
+            val prevAdvance = existing?.advanceRon ?: 0L
+            val delta = plan.advanceRon - prevAdvance
+            if (delta > 0) {
+                // Record ADVANCE revenue only for the increased portion
+                db.financeDao().upsert(
+                    FinancialTransaction(
+                        projectId = plan.projectId,
+                        type = TransactionType.REVENUE,
+                        category = "ADVANCE",
+                        amountRon = delta,
+                        date = java.time.LocalDate.now().toString()
+                    )
+                )
+            }
+        }
+    }
     fun upsertInstallments(vararg inst: Installment) { viewModelScope.launch { db.paymentDao().upsertInstallments(*inst) } }
 
     fun markPaid(inst: Installment, projectId: Long) {

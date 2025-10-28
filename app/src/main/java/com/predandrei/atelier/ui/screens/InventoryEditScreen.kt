@@ -40,7 +40,8 @@ fun InventoryEditScreen(itemId: Long?, onSaved: () -> Unit, vm: InventoryViewMod
                 selectedCategoryId = i.categoryId
                 qtyText = i.quantity.toString()
                 minText = i.minStock.toString()
-                priceText = i.priceRon.toString()
+                // Display as decimal (RON)
+                priceText = String.format("%.2f", i.priceRon / 100.0)
                 partNumber = i.partNumber.orEmpty()
                 description = i.description.orEmpty()
                 selectedSupplierId = i.supplierId
@@ -49,7 +50,7 @@ fun InventoryEditScreen(itemId: Long?, onSaved: () -> Unit, vm: InventoryViewMod
     }
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
-        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") })
+        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.name)) })
         Spacer(Modifier.height(8.dp))
         val catVm: CategoriesViewModel = hiltViewModel()
         val cats by catVm.categories.collectAsState()
@@ -57,25 +58,29 @@ fun InventoryEditScreen(itemId: Long?, onSaved: () -> Unit, vm: InventoryViewMod
         ExposedDropdownMenuBox(expanded = catExpanded, onExpandedChange = { catExpanded = !catExpanded }) {
             OutlinedTextField(
                 readOnly = true,
-                value = cats.firstOrNull { it.id == selectedCategoryId }?.name ?: "No category",
+                value = cats.firstOrNull { it.id == selectedCategoryId }?.name ?: stringResource(id = com.predandrei.atelier.R.string.no_category),
                 onValueChange = {},
-                label = { Text("Category") },
+                label = { Text(stringResource(id = com.predandrei.atelier.R.string.category)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = catExpanded) },
                 modifier = Modifier.menuAnchor()
             )
             ExposedDropdownMenu(expanded = catExpanded, onDismissRequest = { catExpanded = false }) {
-                DropdownMenuItem(text = { Text("No category") }, onClick = { selectedCategoryId = null; catExpanded = false })
+                DropdownMenuItem(text = { Text(stringResource(id = com.predandrei.atelier.R.string.no_category)) }, onClick = { selectedCategoryId = null; catExpanded = false })
                 cats.forEach { c -> DropdownMenuItem(text = { Text(c.name) }, onClick = { selectedCategoryId = c.id; catExpanded = false }) }
             }
         }
         Spacer(Modifier.height(8.dp))
-        OutlinedTextField(value = qtyText, onValueChange = { qtyText = it.filter { ch -> ch.isDigit() } }, label = { Text("Quantity") })
+        OutlinedTextField(value = qtyText, onValueChange = { qtyText = it.filter { ch -> ch.isDigit() } }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.quantity)) })
         Spacer(Modifier.height(8.dp))
-        OutlinedTextField(value = priceText, onValueChange = { priceText = it.filter { ch -> ch.isDigit() } }, label = { Text("Price (RON bani)") })
+        OutlinedTextField(value = priceText, onValueChange = { priceText = it.replace(',', '.').filter { it.isDigit() || it == '.' }.let { t ->
+            // keep only one dot
+            val first = t.indexOf('.')
+            if (first == -1) t else t.substring(0, first + 1) + t.substring(first + 1).replace(".", "")
+        } }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.price_ron)) })
         Spacer(Modifier.height(8.dp))
-        OutlinedTextField(value = partNumber, onValueChange = { partNumber = it }, label = { Text("Part number") })
+        OutlinedTextField(value = partNumber, onValueChange = { partNumber = it }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.part_number)) })
         Spacer(Modifier.height(8.dp))
-        OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") })
+        OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.description)) })
         Spacer(Modifier.height(8.dp))
         val supVm: SuppliersViewModel = hiltViewModel()
         val sups by supVm.suppliers.collectAsState()
@@ -83,24 +88,24 @@ fun InventoryEditScreen(itemId: Long?, onSaved: () -> Unit, vm: InventoryViewMod
         ExposedDropdownMenuBox(expanded = supExpanded, onExpandedChange = { supExpanded = !supExpanded }) {
             OutlinedTextField(
                 readOnly = true,
-                value = sups.firstOrNull { it.id == selectedSupplierId }?.name ?: "No supplier",
+                value = sups.firstOrNull { it.id == selectedSupplierId }?.name ?: stringResource(id = com.predandrei.atelier.R.string.no_supplier),
                 onValueChange = {},
-                label = { Text("Supplier") },
+                label = { Text(stringResource(id = com.predandrei.atelier.R.string.supplier)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supExpanded) },
                 modifier = Modifier.menuAnchor()
             )
             ExposedDropdownMenu(expanded = supExpanded, onDismissRequest = { supExpanded = false }) {
-                DropdownMenuItem(text = { Text("No supplier") }, onClick = { selectedSupplierId = null; supExpanded = false })
+                DropdownMenuItem(text = { Text(stringResource(id = com.predandrei.atelier.R.string.no_supplier)) }, onClick = { selectedSupplierId = null; supExpanded = false })
                 sups.forEach { s -> DropdownMenuItem(text = { Text(s.name) }, onClick = { selectedSupplierId = s.id; supExpanded = false }) }
             }
         }
         Spacer(Modifier.height(8.dp))
-        OutlinedTextField(value = minText, onValueChange = { minText = it.filter { ch -> ch.isDigit() } }, label = { Text("Min stock") })
+        OutlinedTextField(value = minText, onValueChange = { minText = it.filter { ch -> ch.isDigit() } }, label = { Text(stringResource(id = com.predandrei.atelier.R.string.min_stock)) })
         Spacer(Modifier.height(16.dp))
         Button(onClick = {
             val qty = qtyText.toIntOrNull() ?: 0
             val min = minText.toIntOrNull() ?: 0
-            val price = priceText.toLongOrNull() ?: 0
+            val price = com.predandrei.atelier.util.MoneyParser.toMinorUnits(priceText)
             val item = InventoryItem(
                 id = itemId ?: 0L,
                 name = name,
@@ -113,7 +118,7 @@ fun InventoryEditScreen(itemId: Long?, onSaved: () -> Unit, vm: InventoryViewMod
                 supplierId = selectedSupplierId
             )
             scope.launch { vm.save(item); onSaved() }
-        }) { Text("Save") }
+        }) { Text(stringResource(id = com.predandrei.atelier.R.string.save)) }
 
         if ((itemId ?: 0L) > 0) {
             Spacer(Modifier.height(16.dp))
@@ -121,13 +126,13 @@ fun InventoryEditScreen(itemId: Long?, onSaved: () -> Unit, vm: InventoryViewMod
             if (confirm) {
                 AlertDialog(
                     onDismissRequest = { confirm = false },
-                    confirmButton = { TextButton(onClick = { scope.launch { vm.delete(itemId!!); onSaved() } }) { Text("Delete") } },
-                    dismissButton = { TextButton(onClick = { confirm = false }) { Text("Cancel") } },
-                    title = { Text("Delete item?") },
-                    text = { Text("This action cannot be undone.") }
+                    confirmButton = { TextButton(onClick = { scope.launch { vm.delete(itemId!!); onSaved() } }) { Text(stringResource(id = com.predandrei.atelier.R.string.delete)) } },
+                    dismissButton = { TextButton(onClick = { confirm = false }) { Text(stringResource(id = com.predandrei.atelier.R.string.cancel)) } },
+                    title = { Text(stringResource(id = com.predandrei.atelier.R.string.delete_item_q)) },
+                    text = { Text(stringResource(id = com.predandrei.atelier.R.string.action_cannot_undone)) }
                 )
             }
-            OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error), onClick = { confirm = true }) { Text("Delete") }
+            OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error), onClick = { confirm = true }) { Text(stringResource(id = com.predandrei.atelier.R.string.delete)) }
         }
     }
 }
