@@ -16,6 +16,12 @@
     <string name="english">English</string>
     <string name="romanian">Romanian</string>
     <string name="toggle_language">Switch Language</string>
+    <string name="backup">Backup</string>
+    <string name="backup_to_file">Backup to file</string>
+    <string name="restore_from_backup">Restore from backup</string>
+    <string name="inventory_management">Inventory management</string>
+    <string name="manage_categories">Manage categories</string>
+    <string name="manage_suppliers">Manage suppliers</string>
 
     <!-- Dashboard -->
     <string name="overview">Overview</string>
