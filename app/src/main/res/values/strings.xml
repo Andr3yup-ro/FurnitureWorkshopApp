@@ -49,6 +49,7 @@
     <string name="project_value_ron">Project value (RON)</string>
     <string name="manage_payments">Manage Payments</string>
     <string name="manage_materials">Manage Materials</string>
+    <string name="manage_labor">Manage Labor</string>
     <string name="search_clients">Search clients</string>
     <!-- Payments -->
     <string name="payment_plan">Payment Plan</string>
@@ -79,4 +80,12 @@
     <string name="overhead_cost_fmt">Overhead: %1$s</string>
     <string name="paid_fmt">Paid: %1$s</string>
     <string name="remaining_fmt">Remaining: %1$s</string>
+    <!-- Labor -->
+    <string name="hours">Hours</string>
+    <string name="minutes">Minutes</string>
+    <string name="hourly_rate_ron">Hourly rate (RON)</string>
+    <string name="labor_overview">Labor</string>
+    <string name="labor_total_hours_fmt">Total: %1$dh %2$dm</string>
+    <string name="labor_total_cost_fmt">Total cost: %1$s</string>
+    <string name="delete_labor_q">Delete labor entry?</string>
 </resources>

@@ -123,3 +123,18 @@ interface ProjectMaterialsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(vararg usage: ProjectMaterialUsage)
 }
+
+@Dao
+interface LaborDao {
+    @Query("SELECT * FROM LaborEntry WHERE projectId = :projectId ORDER BY date DESC")
+    fun getByProject(projectId: Long): Flow<List<LaborEntry>>
+
+    @Query("SELECT * FROM LaborEntry")
+    fun getAll(): Flow<List<LaborEntry>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(vararg labor: LaborEntry)
+
+    @Query("DELETE FROM LaborEntry WHERE id = :id")
+    suspend fun delete(id: Long)
+}

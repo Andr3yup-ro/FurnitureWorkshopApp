@@ -64,6 +64,15 @@ data class FinancialTransaction(
     val date: String // ISO date
 )
 
+@Entity
+data class LaborEntry(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val projectId: Long,
+    val date: String, // ISO date
+    val minutes: Int, // store minutes for precision
+    val hourlyRateRon: Long // minor units
+)
+
 enum class PaymentMethod { CASH, CARD, BANK_TRANSFER }
 
 @Entity

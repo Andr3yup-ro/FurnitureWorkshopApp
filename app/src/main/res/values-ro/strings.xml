@@ -49,6 +49,7 @@
     <string name="project_value_ron">Valoare proiect (RON)</string>
     <string name="manage_payments">Gestionează plățile</string>
     <string name="manage_materials">Gestionează materialele</string>
+    <string name="manage_labor">Gestionează manopera</string>
     <string name="search_clients">Caută clienți</string>
     <!-- Payments -->
     <string name="payment_plan">Plan de plată</string>
@@ -79,4 +80,12 @@
     <string name="overhead_cost_fmt">Cheltuieli generale: %1$s</string>
     <string name="paid_fmt">Plătit: %1$s</string>
     <string name="remaining_fmt">Rămas: %1$s</string>
+    <!-- Labor -->
+    <string name="hours">Ore</string>
+    <string name="minutes">Minute</string>
+    <string name="hourly_rate_ron">Tarif orar (RON)</string>
+    <string name="labor_overview">Manoperă</string>
+    <string name="labor_total_hours_fmt">Total: %1$dh %2$dm</string>
+    <string name="labor_total_cost_fmt">Cost total: %1$s</string>
+    <string name="delete_labor_q">Ștergi înregistrarea de manoperă?</string>
 </resources>
