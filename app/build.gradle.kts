@@ -16,8 +16,9 @@ android {
         applicationId = "com.predandrei.atelier"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        // Bumped for next cycle after v0.3.2 release
+        versionCode = 7
+        versionName = "0.3.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
