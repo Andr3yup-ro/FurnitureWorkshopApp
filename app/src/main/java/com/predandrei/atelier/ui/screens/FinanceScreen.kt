@@ -139,8 +139,12 @@ fun FinanceScreen(modifier: Modifier = Modifier, vm: FinanceViewModel = hiltView
         val paidForProject = remember(txs, selectedProjectId) {
             if (selectedProjectId == null) 0L else txs.filter { it.projectId == selectedProjectId && it.type == TransactionType.REVENUE }.sumOf { it.amountRon }
         }
-        // Labor/Overhead: sum expenses by category
-        val laborCost = remember(txs, selectedProjectId) { if (selectedProjectId == null) 0L else txs.filter { it.projectId == selectedProjectId && it.type == TransactionType.EXPENSE && it.category.equals("LABOR", true) }.sumOf { it.amountRon } }
+        // Labor: from labor entries
+        val laborEntries by vm.laborEntries.collectAsState()
+        val laborCost = remember(laborEntries, selectedProjectId) {
+            if (selectedProjectId == null) 0L else laborEntries.filter { it.projectId == selectedProjectId }
+                .sumOf { (it.hourlyRateRon * it.minutes) / 60 }
+        }
         val overheadCost = remember(txs, selectedProjectId) { if (selectedProjectId == null) 0L else txs.filter { it.projectId == selectedProjectId && it.type == TransactionType.EXPENSE && it.category.equals("OVERHEAD", true) }.sumOf { it.amountRon } }
         val remaining = (projectValue - paidForProject).coerceAtLeast(0)
         if (selectedProjectId != null) {

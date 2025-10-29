@@ -20,6 +20,7 @@ class FinanceViewModel @Inject constructor(
     // For breakdowns
     val inventory = db.inventoryDao().getAll().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val materialUsages = db.projectMaterialsDao().getAll().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val laborEntries = db.laborDao().getAll().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val revenueTotalRon: StateFlow<Long> = transactions.map { list ->
         list.filter { it.type == TransactionType.REVENUE }.sumOf { it.amountRon }

@@ -43,6 +43,7 @@ import com.predandrei.atelier.ui.screens.CategoriesScreen
 import com.predandrei.atelier.ui.screens.CategoryEditScreen
 import com.predandrei.atelier.ui.screens.SuppliersScreen
 import com.predandrei.atelier.ui.screens.SupplierEditScreen
+import com.predandrei.atelier.ui.screens.ProjectLaborScreen
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
@@ -183,7 +184,7 @@ fun RootNav() {
                 val id = backStack.arguments?.getString("id")?.toLongOrNull()
                 ProjectEditScreen(projectId = id, onSaved = { navController.popBackStack() }, onManagePayments = { pid ->
                     navController.navigate("project_payments/$pid")
-                }, onManageMaterials = { pid -> navController.navigate("project_materials/$pid") })
+                }, onManageMaterials = { pid -> navController.navigate("project_materials/$pid") }, onManageLabor = { pid -> navController.navigate("project_labor/$pid") })
             }
             composable("client_edit") { ClientEditScreen(clientId = null, onSaved = { navController.popBackStack() }) }
             composable("client_edit/{id}") { backStack ->
@@ -194,6 +195,10 @@ fun RootNav() {
             composable("inventory_edit/{id}") { backStack ->
                 val id = backStack.arguments?.getString("id")?.toLongOrNull()
                 InventoryEditScreen(itemId = id, onSaved = { navController.popBackStack() })
+            }
+            composable("project_labor/{projectId}") { backStack ->
+                val id = backStack.arguments?.getString("projectId")?.toLongOrNull() ?: 0L
+                ProjectLaborScreen(projectId = id, onDone = { navController.popBackStack() })
             }
         }
     }

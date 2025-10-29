@@ -24,6 +24,7 @@ fun ProjectEditScreen(
     onSaved: () -> Unit,
     onManagePayments: (Long) -> Unit = {},
     onManageMaterials: (Long) -> Unit = {},
+    onManageLabor: (Long) -> Unit = {},
     vm: ProjectsViewModel = hiltViewModel()
 ) {
     var title by remember { mutableStateOf("") }
@@ -112,6 +113,10 @@ fun ProjectEditScreen(
             Spacer(Modifier.height(8.dp))
             Button(onClick = { onManageMaterials(projectId!!) }, enabled = true) {
                 Text(stringResource(id = com.predandrei.atelier.R.string.manage_materials))
+            }
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = { onManageLabor(projectId!!) }, enabled = true) {
+                Text(stringResource(id = com.predandrei.atelier.R.string.manage_labor))
             }
             Spacer(Modifier.height(16.dp))
             var confirm by remember { mutableStateOf(false) }

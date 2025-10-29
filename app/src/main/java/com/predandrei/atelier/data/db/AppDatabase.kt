@@ -15,9 +15,10 @@ import com.predandrei.atelier.data.model.*
         FinancialTransaction::class,
         PaymentPlan::class,
         Installment::class,
-        ProjectMaterialUsage::class
+        ProjectMaterialUsage::class,
+        LaborEntry::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(EnumConverters::class)
@@ -30,4 +31,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun financeDao(): FinanceDao
     abstract fun paymentDao(): PaymentDao
     abstract fun projectMaterialsDao(): ProjectMaterialsDao
+    abstract fun laborDao(): LaborDao
 }
