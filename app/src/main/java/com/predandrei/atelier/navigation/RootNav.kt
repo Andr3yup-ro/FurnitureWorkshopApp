@@ -15,6 +15,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.runtime.*
@@ -41,6 +43,7 @@ import com.predandrei.atelier.ui.screens.ProjectPaymentsScreen
 import com.predandrei.atelier.ui.screens.ProjectMaterialsScreen
 import com.predandrei.atelier.ui.screens.SettingsScreen
 import com.predandrei.atelier.ui.screens.ReportsScreen
+import com.predandrei.atelier.ui.screens.PaymentsScreen
 import com.predandrei.atelier.ui.screens.CategoriesScreen
 import com.predandrei.atelier.ui.screens.CategoryEditScreen
 import com.predandrei.atelier.ui.screens.SuppliersScreen
@@ -96,7 +99,8 @@ fun RootNav() {
         }
     }
     Scaffold(
-        topBar = { CenterAlignedTopAppBar(
+        topBar = { androidx.compose.foundation.layout.Column {
+            CenterAlignedTopAppBar(
             title = {
                 val titleRes = bottomDestinations.firstOrNull { it.route == currentRoute }?.labelRes
                 if (titleRes != null) Text(stringResource(titleRes)) else Text(currentRoute.replaceFirstChar { it.uppercase() })
@@ -133,26 +137,36 @@ fun RootNav() {
                     }
                 }
             }
-        ) },
-        bottomBar = {
-            NavigationBar {
-                bottomDestinations.forEach { dest ->
-                    val selected = currentDestination?.hierarchy?.any { it.route == dest.route } == true
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            navController.navigate(dest.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(dest.icon, contentDescription = stringResource(dest.labelRes)) },
-                        label = { Text(stringResource(dest.labelRes)) }
-                    )
+            )
+            // Top tabs to match website
+            val tabs = listOf(
+                Destination("projects", R.string.nav_projects, Icons.Rounded.Work),
+                Destination("inventory", R.string.nav_inventory, Icons.Rounded.Inventory2),
+                Destination("finance", R.string.nav_finance, Icons.Rounded.Dashboard),
+                Destination("payments", R.string.nav_payments, Icons.Rounded.Dashboard),
+            )
+            val selectedIndex = tabs.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
+            if (currentRoute in tabs.map { it.route }) {
+                TabRow(selectedTabIndex = selectedIndex) {
+                    tabs.forEachIndexed { index, dest ->
+                        Tab(
+                            selected = index == selectedIndex,
+                            onClick = {
+                                if (currentRoute != dest.route) {
+                                    navController.navigate(dest.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            },
+                            text = { Text(stringResource(dest.labelRes)) }
+                        )
+                    }
                 }
             }
-        },
+        } },
+        bottomBar = {},
         floatingActionButton = {
             val ctx = LocalContext.current
             when (currentRoute) {
@@ -198,6 +212,7 @@ fun RootNav() {
                 })
             }
             composable("finance") { FinanceScreen(modifier = Modifier.fillMaxSize()) }
+            composable("payments") { PaymentsScreen() }
             composable("project_payments/{projectId}") { backStack ->
                 val id = backStack.arguments?.getString("projectId")?.toLongOrNull() ?: 0L
                 ProjectPaymentsScreen(projectId = id, onDone = { navController.popBackStack() })
