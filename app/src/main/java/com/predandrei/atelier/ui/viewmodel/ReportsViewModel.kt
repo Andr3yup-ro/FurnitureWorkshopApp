@@ -27,4 +27,34 @@ class ReportsViewModel @Inject constructor(
             onDone()
         }
     }
+
+    fun exportProjects(output: OutputStream, onDone: () -> Unit = {}) {
+        _status.value = "Generating Projects PDF…"
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching { exporter.exportProjectsToPdf(output) }
+                .onSuccess { _status.value = "Report generated" }
+                .onFailure { _status.value = "Failed: ${it.message}" }
+            onDone()
+        }
+    }
+
+    fun exportInventory(output: OutputStream, onDone: () -> Unit = {}) {
+        _status.value = "Generating Inventory PDF…"
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching { exporter.exportInventoryToPdf(output) }
+                .onSuccess { _status.value = "Report generated" }
+                .onFailure { _status.value = "Failed: ${it.message}" }
+            onDone()
+        }
+    }
+
+    fun exportFinance(output: OutputStream, onDone: () -> Unit = {}) {
+        _status.value = "Generating Finance PDF…"
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching { exporter.exportFinanceToPdf(output) }
+                .onSuccess { _status.value = "Report generated" }
+                .onFailure { _status.value = "Failed: ${it.message}" }
+            onDone()
+        }
+    }
 }

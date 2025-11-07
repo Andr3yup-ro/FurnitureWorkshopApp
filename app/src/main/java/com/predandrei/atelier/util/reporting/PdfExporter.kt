@@ -13,6 +13,81 @@ import javax.inject.Singleton
 class PdfExporter @Inject constructor(
     private val db: AppDatabase
 ) {
+    suspend fun exportProjectsToPdf(output: OutputStream) {
+        val projects = db.projectDao().getAll().first()
+        val clients = db.clientDao().getAll().first()
+        val doc = PdfDocument()
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(595, 842, 1).create())
+        val canvas = page.canvas
+        val paint = Paint().apply { textSize = 12f }
+        var y = 24f
+        fun title(t: String) { paint.textSize = 16f; canvas.drawText(t, 24f, y, paint); y += 20f; paint.textSize = 12f }
+        fun line(t: String) { canvas.drawText(t, 24f, y, paint); y += 16f }
+        fun newPage() { doc.finishPage(page); val n = doc.pages.size + 1; page = doc.startPage(PdfDocument.PageInfo.Builder(595, 842, n).create()); y = 24f }
+        title("Projects Report")
+        line("Generated: ${java.time.LocalDateTime.now()}")
+        y += 8f
+        projects.forEach { p ->
+            if (y > 800f) newPage()
+            val clientName = clients.firstOrNull { it.id == p.clientId }?.name ?: "-"
+            line("#${p.id} ${p.title} — ${p.status} — ${clientName} — ${CurrencyRon.formatMinorUnits(p.valueRon)}")
+        }
+        doc.finishPage(page)
+        doc.writeTo(output)
+        doc.close()
+        output.flush()
+    }
+
+    suspend fun exportInventoryToPdf(output: OutputStream) {
+        val items = db.inventoryDao().getAll().first()
+        val doc = PdfDocument()
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(595, 842, 1).create())
+        val canvas = page.canvas
+        val paint = Paint().apply { textSize = 12f }
+        var y = 24f
+        fun title(t: String) { paint.textSize = 16f; canvas.drawText(t, 24f, y, paint); y += 20f; paint.textSize = 12f }
+        fun line(t: String) { canvas.drawText(t, 24f, y, paint); y += 16f }
+        fun newPage() { doc.finishPage(page); val n = doc.pages.size + 1; page = doc.startPage(PdfDocument.PageInfo.Builder(595, 842, n).create()); y = 24f }
+        title("Inventory Report")
+        line("Generated: ${java.time.LocalDateTime.now()}")
+        y += 8f
+        items.forEach { it ->
+            if (y > 800f) newPage()
+            line("#${it.id} ${it.name} — Qty: ${it.quantity} — Min: ${it.minStock} — ${CurrencyRon.formatMinorUnits(it.priceRon)}")
+        }
+        doc.finishPage(page)
+        doc.writeTo(output)
+        doc.close()
+        output.flush()
+    }
+
+    suspend fun exportFinanceToPdf(output: OutputStream) {
+        val txs = db.financeDao().getAll().first()
+        val doc = PdfDocument()
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(595, 842, 1).create())
+        val canvas = page.canvas
+        val paint = Paint().apply { textSize = 12f }
+        var y = 24f
+        fun title(t: String) { paint.textSize = 16f; canvas.drawText(t, 24f, y, paint); y += 20f; paint.textSize = 12f }
+        fun line(t: String) { canvas.drawText(t, 24f, y, paint); y += 16f }
+        fun newPage() { doc.finishPage(page); val n = doc.pages.size + 1; page = doc.startPage(PdfDocument.PageInfo.Builder(595, 842, n).create()); y = 24f }
+        title("Finance Report")
+        line("Generated: ${java.time.LocalDateTime.now()}")
+        y += 8f
+        val rev = txs.filter { it.type.name == "REVENUE" }.sumOf { it.amountRon }
+        val exp = txs.filter { it.type.name == "EXPENSE" }.sumOf { it.amountRon }
+        line("Revenue: ${CurrencyRon.formatMinorUnits(rev)}  Expenses: ${CurrencyRon.formatMinorUnits(exp)}  Profit: ${CurrencyRon.formatMinorUnits(rev - exp)}")
+        y += 8f
+        txs.forEach { t ->
+            if (y > 800f) newPage()
+            line("${t.date} — ${t.type} — ${t.category} — ${CurrencyRon.formatMinorUnits(t.amountRon)}")
+        }
+        doc.finishPage(page)
+        doc.writeTo(output)
+        doc.close()
+        output.flush()
+    }
+
     suspend fun exportAllToPdf(output: OutputStream) {
         val clients = db.clientDao().getAll().first()
         val projects = db.projectDao().getAll().first()

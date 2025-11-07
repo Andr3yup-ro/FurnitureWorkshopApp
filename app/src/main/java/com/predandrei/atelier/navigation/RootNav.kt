@@ -13,8 +13,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -50,6 +52,10 @@ import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
 import androidx.compose.ui.res.stringResource
 import com.predandrei.atelier.R
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.predandrei.atelier.ui.viewmodel.ReportsViewModel
 
 private data class Destination(
     val route: String,
@@ -74,8 +80,22 @@ fun RootNav() {
     val currentRoute = currentDestination?.route ?: bottomDestinations.first().route
 
     val isBottom = bottomDestinations.any { it.route == currentRoute }
+    val reportsVm: ReportsViewModel = hiltViewModel()
+    val ctx = LocalContext.current
+    val createDocLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+        if (uri != null) {
+            val resolver = ctx.contentResolver
+            resolver.openOutputStream(uri)?.use { out ->
+                when (currentRoute) {
+                    "projects" -> reportsVm.exportProjects(out)
+                    "inventory" -> reportsVm.exportInventory(out)
+                    "finance" -> reportsVm.exportFinance(out)
+                }
+            }
+        }
+    }
     Scaffold(
-        topBar = { TopAppBar(
+        topBar = { CenterAlignedTopAppBar(
             title = {
                 val titleRes = bottomDestinations.firstOrNull { it.route == currentRoute }?.labelRes
                 if (titleRes != null) Text(stringResource(titleRes)) else Text(currentRoute.replaceFirstChar { it.uppercase() })
@@ -87,6 +107,20 @@ fun RootNav() {
                         contentDescription = "Back",
                         modifier = Modifier.clickable { navController.navigateUp() }
                     )
+                }
+            },
+            actions = {
+                if (currentRoute in listOf("projects", "inventory", "finance")) {
+                    IconButton(onClick = {
+                        val defaultName = when (currentRoute) {
+                            "projects" -> "projects-report.pdf"
+                            "inventory" -> "inventory-report.pdf"
+                            else -> "finance-report.pdf"
+                        }
+                        createDocLauncher.launch(defaultName)
+                    }) {
+                        Icon(Icons.Rounded.Download, contentDescription = "Export PDF")
+                    }
                 }
             }
         ) },
