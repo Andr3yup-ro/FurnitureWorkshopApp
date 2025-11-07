@@ -6,9 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
  
 
 @Composable
@@ -41,30 +38,7 @@ fun ManagerPrestanTheme(
     )
     MaterialTheme(
         colorScheme = if (darkTheme) dark else light,
-        typography = modernTypography(),
+        typography = Typography(),
         content = content
-    )
-}
-
-@Composable
-private fun modernTypography(): Typography {
-    val inter = FontFamily.SansSerif
-    val base = Typography()
-    return Typography(
-        displayLarge = base.displayLarge.copy(fontFamily = inter),
-        displayMedium = base.displayMedium.copy(fontFamily = inter),
-        displaySmall = base.displaySmall.copy(fontFamily = inter),
-        headlineLarge = base.headlineLarge.copy(fontFamily = inter),
-        headlineMedium = base.headlineMedium.copy(fontFamily = inter),
-        headlineSmall = base.headlineSmall.copy(fontFamily = inter),
-        titleLarge = base.titleLarge.copy(fontFamily = inter, fontWeight = FontWeight.SemiBold),
-        titleMedium = base.titleMedium.copy(fontFamily = inter, fontWeight = FontWeight.SemiBold),
-        titleSmall = base.titleSmall.copy(fontFamily = inter, fontWeight = FontWeight.SemiBold),
-        bodyLarge = base.bodyLarge.copy(fontFamily = inter),
-        bodyMedium = base.bodyMedium.copy(fontFamily = inter),
-        bodySmall = base.bodySmall.copy(fontFamily = inter),
-        labelLarge = base.labelLarge.copy(fontFamily = inter, fontWeight = FontWeight.Medium),
-        labelMedium = base.labelMedium.copy(fontFamily = inter, fontWeight = FontWeight.Medium),
-        labelSmall = base.labelSmall.copy(fontFamily = inter, fontWeight = FontWeight.Medium)
     )
 }
