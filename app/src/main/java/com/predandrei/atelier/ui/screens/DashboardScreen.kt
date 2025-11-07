@@ -64,7 +64,7 @@ fun DashboardScreen(
     val overdueCount = installments.count { !it.paid && java.time.LocalDate.parse(it.dueDate) < today }
 
     val cards = listOf(
-        DashboardItem("Active projects", "$activeProjects in progress", Icons.Rounded.Work),
+        DashboardItem("Active Projects", "$activeProjects in progress", Icons.Rounded.Work),
         DashboardItem("Stock Items", "${items.size} total", Icons.Rounded.Inventory2),
         DashboardItem("Low stock", "$lowStock items", Icons.Rounded.Inventory2),
         DashboardItem("Monthly Revenue", "${CurrencyRon.formatMinorUnits(monthlyRevenue)}  $deltaLabel", Icons.Rounded.CheckCircle),
@@ -79,7 +79,7 @@ fun DashboardScreen(
     ) {
         items(cards) { item ->
             val onClick = when (item.title) {
-                "Active projects" -> onOpenProjects
+                "Active Projects" -> onOpenProjects
                 "Inventory alerts" -> onOpenInventory
                 "Stock Items" -> onOpenInventory
                 "Low stock" -> onOpenInventory

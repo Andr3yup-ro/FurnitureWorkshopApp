@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MobilaPrestan</string>
+    <string name="app_name">Manager Prestan</string>
 
     <!-- Navigation labels -->
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_projects">Projects</string>
     <string name="nav_clients">Clients</string>
-    <string name="nav_inventory">Inventory</string>
+    <string name="nav_inventory">Stock</string>
     <string name="nav_finance">Finance</string>
     <string name="nav_payments">Payments</string>
     <string name="nav_settings">Settings</string>
