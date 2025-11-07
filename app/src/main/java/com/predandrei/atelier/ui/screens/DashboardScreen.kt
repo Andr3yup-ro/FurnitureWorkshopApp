@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.predandrei.atelier.ui.viewmodel.InventoryViewModel
 import com.predandrei.atelier.ui.viewmodel.ProjectsViewModel
 import com.predandrei.atelier.ui.viewmodel.FinanceViewModel
+import com.predandrei.atelier.ui.viewmodel.PaymentsViewModel
 import com.predandrei.atelier.util.CurrencyRon
 
 @Composable
@@ -38,16 +39,36 @@ fun DashboardScreen(
     val invVm: InventoryViewModel = hiltViewModel()
     val projVm: ProjectsViewModel = hiltViewModel()
     val finVm: FinanceViewModel = hiltViewModel()
+    val payVm: PaymentsViewModel = hiltViewModel()
 
     val items by invVm.items.collectAsState()
     val lowStock = items.count { it.quantity <= it.minStock }
     val projects by projVm.projects.collectAsState()
     val activeProjects = projects.count { it.status.name == "IN_PROGRESS" }
     val profit by finVm.profitRon.collectAsState()
+    val txs by finVm.transactions.collectAsState()
+    val installments by payVm.allInstallments.collectAsState()
+
+    val today = java.time.LocalDate.now()
+    val firstOfThisMonth = today.withDayOfMonth(1)
+    val firstOfPrevMonth = firstOfThisMonth.minusMonths(1)
+    val endOfPrevMonth = firstOfThisMonth.minusDays(1)
+    val monthlyRevenue = txs.filter { it.type == com.predandrei.atelier.data.model.TransactionType.REVENUE && java.time.LocalDate.parse(it.date) >= firstOfThisMonth }
+        .sumOf { it.amountRon }
+    val prevMonthlyRevenue = txs.filter { it.type == com.predandrei.atelier.data.model.TransactionType.REVENUE && java.time.LocalDate.parse(it.date) in firstOfPrevMonth..endOfPrevMonth }
+        .sumOf { it.amountRon }
+    val deltaPct = if (prevMonthlyRevenue == 0L) 100 else (((monthlyRevenue - prevMonthlyRevenue).toDouble() / kotlin.math.max(1.0, prevMonthlyRevenue.toDouble())) * 100).toInt()
+    val deltaLabel = (if (deltaPct >= 0) "+" else "") + "$deltaPct% from monthly"
+
+    val pendingAmount = installments.filter { !it.paid }.sumOf { it.amountRon }
+    val overdueCount = installments.count { !it.paid && java.time.LocalDate.parse(it.dueDate) < today }
 
     val cards = listOf(
         DashboardItem("Active projects", "$activeProjects in progress", Icons.Rounded.Work),
-        DashboardItem("Inventory alerts", "$lowStock low stock", Icons.Rounded.Inventory2),
+        DashboardItem("Stock Items", "${items.size} total", Icons.Rounded.Inventory2),
+        DashboardItem("Low stock", "$lowStock items", Icons.Rounded.Inventory2),
+        DashboardItem("Monthly Revenue", "${CurrencyRon.formatMinorUnits(monthlyRevenue)}  $deltaLabel", Icons.Rounded.CheckCircle),
+        DashboardItem("Pending Payments", "${CurrencyRon.formatMinorUnits(pendingAmount)}  $overdueCount overdue", Icons.Rounded.CheckCircle),
         DashboardItem("Profit", CurrencyRon.formatMinorUnits(profit), Icons.Rounded.CheckCircle),
     )
 
@@ -60,6 +81,8 @@ fun DashboardScreen(
             val onClick = when (item.title) {
                 "Active projects" -> onOpenProjects
                 "Inventory alerts" -> onOpenInventory
+                "Stock Items" -> onOpenInventory
+                "Low stock" -> onOpenInventory
                 "Profit" -> onOpenFinance
                 else -> ({})
             }
