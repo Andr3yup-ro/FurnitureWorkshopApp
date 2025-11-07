@@ -11,13 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import dagger.hilt.android.AndroidEntryPoint
 import com.predandrei.atelier.navigation.RootNav
 import com.predandrei.atelier.ui.AppLanguageApplier
+import com.predandrei.atelier.ui.theme.ManagerPrestanTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            ManagerPrestanTheme {
                 AtelierAppRoot()
             }
         }

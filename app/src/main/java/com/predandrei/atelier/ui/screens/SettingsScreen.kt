@@ -22,7 +22,8 @@ fun SettingsScreen(
     vm: LanguageViewModel = hiltViewModel(),
     backupVm: BackupViewModel = hiltViewModel(),
     onOpenCategories: () -> Unit = {},
-    onOpenSuppliers: () -> Unit = {}
+    onOpenSuppliers: () -> Unit = {},
+    onOpenReports: () -> Unit = {}
 ) {
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text(stringResource(R.string.language))
@@ -40,5 +41,8 @@ fun SettingsScreen(
         Text(stringResource(R.string.inventory_management))
         Button(onClick = onOpenCategories) { Text(stringResource(R.string.manage_categories)) }
         Button(onClick = onOpenSuppliers) { Text(stringResource(R.string.manage_suppliers)) }
+
+        Spacer(Modifier.height(24.dp))
+        Button(onClick = onOpenReports) { Text("Reports (PDF)") }
     }
 }

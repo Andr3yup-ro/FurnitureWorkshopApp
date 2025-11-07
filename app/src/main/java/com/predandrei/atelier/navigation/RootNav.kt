@@ -39,6 +39,7 @@ import com.predandrei.atelier.ui.screens.FinanceScreen
 import com.predandrei.atelier.ui.screens.ProjectPaymentsScreen
 import com.predandrei.atelier.ui.screens.ProjectMaterialsScreen
 import com.predandrei.atelier.ui.screens.SettingsScreen
+import com.predandrei.atelier.ui.screens.ReportsScreen
 import com.predandrei.atelier.ui.screens.CategoriesScreen
 import com.predandrei.atelier.ui.screens.CategoryEditScreen
 import com.predandrei.atelier.ui.screens.SuppliersScreen
@@ -163,8 +164,10 @@ fun RootNav() {
             }
             composable("settings") { SettingsScreen(
                 onOpenCategories = { navController.navigate("categories") },
-                onOpenSuppliers = { navController.navigate("suppliers") }
+                onOpenSuppliers = { navController.navigate("suppliers") },
+                onOpenReports = { navController.navigate("reports") }
             ) }
+            composable("reports") { ReportsScreen() }
             composable("categories") { CategoriesScreen(onEdit = { id -> navController.navigate("category_edit" + (id?.let { "/$it" } ?: "")) }) }
             composable("category_edit") { CategoryEditScreen(categoryId = null, onSaved = { navController.popBackStack() }) }
             composable("category_edit/{id}") { backStack ->
