@@ -4,6 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DateRange
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,6 +21,7 @@ import com.predandrei.atelier.data.model.PaymentMethod
 import com.predandrei.atelier.ui.viewmodel.PaymentsViewModel
 import com.predandrei.atelier.util.CurrencyRon
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectPaymentsScreen(projectId: Long, onDone: () -> Unit, vm: PaymentsViewModel = hiltViewModel()) {
     val planState by vm.planForProject(projectId).collectAsState()
@@ -76,11 +83,14 @@ fun ProjectPaymentsScreen(projectId: Long, onDone: () -> Unit, vm: PaymentsViewM
                 // Simple add installment row
                 var dueDate by remember { mutableStateOf(java.time.LocalDate.now().toString()) }
                 var amountText by remember { mutableStateOf("") }
+                var showDatePicker by remember { mutableStateOf(false) }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = dueDate,
-                        onValueChange = { dueDate = it },
+                        onValueChange = {},
                         label = { Text(stringResource(id = com.predandrei.atelier.R.string.due_date)) },
+                        readOnly = true,
+                        trailingIcon = { IconButton(onClick = { showDatePicker = true }) { Icon(Icons.Rounded.DateRange, contentDescription = null) } },
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedTextField(
@@ -92,6 +102,25 @@ fun ProjectPaymentsScreen(projectId: Long, onDone: () -> Unit, vm: PaymentsViewM
                         label = { Text(stringResource(id = com.predandrei.atelier.R.string.amount_ron)) },
                         modifier = Modifier.weight(1f)
                     )
+                }
+                if (showDatePicker) {
+                    val state = rememberDatePickerState()
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                val millis = state.selectedDateMillis
+                                if (millis != null) {
+                                    val localDate = java.time.Instant.ofEpochMilli(millis).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                                    dueDate = localDate.toString()
+                                }
+                                showDatePicker = false
+                            }) { Text(stringResource(id = com.predandrei.atelier.R.string.done)) }
+                        },
+                        dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(id = com.predandrei.atelier.R.string.cancel)) } }
+                    ) {
+                        DatePicker(state = state)
+                    }
                 }
                 Spacer(Modifier.height(8.dp))
                 Button(onClick = {

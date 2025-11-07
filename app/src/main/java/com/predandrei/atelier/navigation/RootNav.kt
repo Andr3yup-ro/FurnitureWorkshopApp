@@ -17,8 +17,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Download
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -82,13 +81,18 @@ fun RootNav() {
     val isBottom = bottomDestinations.any { it.route == currentRoute }
     val reportsVm: ReportsViewModel = hiltViewModel()
     val ctx = LocalContext.current
+    var pendingProjectId by remember { mutableStateOf<Long?>(null) }
     val createDocLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
         if (uri != null) {
             when (currentRoute) {
                 "projects" -> reportsVm.exportProjects(uri, ctx.contentResolver)
                 "inventory" -> reportsVm.exportInventory(uri, ctx.contentResolver)
                 "finance" -> reportsVm.exportFinance(uri, ctx.contentResolver)
+                "project_edit/{id}", "project_payments/{projectId}", "project_materials/{projectId}", "project_labor/{projectId}" -> {
+                    pendingProjectId?.let { reportsVm.exportProject(uri, ctx.contentResolver, it) }
+                }
             }
+            pendingProjectId = null
         }
     }
     Scaffold(
@@ -107,12 +111,21 @@ fun RootNav() {
                 }
             },
             actions = {
-                if (currentRoute in listOf("projects", "inventory", "finance")) {
+                if (currentRoute in listOf("projects", "inventory", "finance", "project_edit/{id}", "project_payments/{projectId}", "project_materials/{projectId}", "project_labor/{projectId}")) {
                     IconButton(onClick = {
                         val defaultName = when (currentRoute) {
                             "projects" -> "projects-report.pdf"
                             "inventory" -> "inventory-report.pdf"
-                            else -> "finance-report.pdf"
+                            "finance" -> "finance-report.pdf"
+                            "project_edit/{id}", "project_payments/{projectId}", "project_materials/{projectId}", "project_labor/{projectId}" -> {
+                                val id = when (currentRoute) {
+                                    "project_edit/{id}" -> backStackEntry?.arguments?.getString("id")?.toLongOrNull()
+                                    else -> backStackEntry?.arguments?.getString("projectId")?.toLongOrNull()
+                                }
+                                pendingProjectId = id
+                                "project-${id ?: "unknown"}-report.pdf"
+                            }
+                            else -> "report.pdf"
                         }
                         createDocLauncher.launch(defaultName)
                     }) {

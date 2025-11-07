@@ -79,4 +79,19 @@ class ReportsViewModel @Inject constructor(
             onDone()
         }
     }
+
+    fun exportProject(uri: Uri, resolver: ContentResolver, projectId: Long, onDone: () -> Unit = {}) {
+        _status.value = "Generating Project PDF…"
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = runCatching {
+                resolver.openOutputStream(uri)?.use { out ->
+                    exporter.exportProjectToPdf(out, projectId)
+                } ?: error("Cannot open output stream")
+            }
+            result
+                .onSuccess { _status.value = "Report generated" }
+                .onFailure { _status.value = "Failed: ${it.message}" }
+            onDone()
+        }
+    }
 }

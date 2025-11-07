@@ -13,6 +13,59 @@ import javax.inject.Singleton
 class PdfExporter @Inject constructor(
     private val db: AppDatabase
 ) {
+    suspend fun exportProjectToPdf(output: OutputStream, projectId: Long) {
+        val project = db.projectDao().getById(projectId)
+        val client = project?.clientId?.let { id -> db.clientDao().getById(id) }
+        val plan = db.paymentDao().getPlanByProjectId(projectId)
+        val installments = plan?.let { db.paymentDao().getInstallments(it.id).first() } ?: emptyList()
+        val materials = db.projectMaterialsDao().getByProject(projectId).first()
+        val labor = db.laborDao().getByProject(projectId).first()
+
+        val doc = PdfDocument()
+        var page = doc.startPage(PdfDocument.PageInfo.Builder(595, 842, 1).create())
+        val canvas = page.canvas
+        val paint = Paint().apply { textSize = 12f }
+        var y = 24f
+        fun title(t: String) { paint.textSize = 16f; canvas.drawText(t, 24f, y, paint); y += 20f; paint.textSize = 12f }
+        fun line(t: String) { canvas.drawText(t, 24f, y, paint); y += 16f }
+        fun newPage() { doc.finishPage(page); val n = doc.pages.size + 1; page = doc.startPage(PdfDocument.PageInfo.Builder(595, 842, n).create()); y = 24f }
+
+        title("Project Report")
+        line("Generated: ${java.time.LocalDateTime.now()}")
+        y += 8f
+        if (project != null) {
+            title("#${project.id} ${project.title}")
+            line("Status: ${project.status}")
+            client?.let { line("Client: ${it.name} ${it.phone ?: ""}") }
+            line("Value: ${CurrencyRon.formatMinorUnits(project.valueRon)}")
+        } else {
+            line("Project not found")
+        }
+
+        y += 8f
+        title("Payment Plan")
+        if (plan != null) {
+            line("Total: ${CurrencyRon.formatMinorUnits(plan.totalRon)}  Advance: ${CurrencyRon.formatMinorUnits(plan.advanceRon)}  Remaining: ${CurrencyRon.formatMinorUnits((plan.totalRon - plan.advanceRon).coerceAtLeast(0))}")
+            y += 6f
+            installments.forEach { i -> if (y > 800f) newPage(); line("${i.dueDate} — ${CurrencyRon.formatMinorUnits(i.amountRon)} — ${if (i.paid) "PAID" else "UNPAID"}") }
+        } else {
+            line("No plan")
+        }
+
+        y += 8f
+        title("Materials (${materials.size})")
+        materials.take(80).forEach { m -> if (y > 800f) newPage(); line("Item ${m.inventoryItemId} — qty ${m.quantityUsed} on ${m.date}") }
+        if (materials.size > 80) { if (y > 800f) newPage(); line("…and ${materials.size - 80} more") }
+
+        y += 8f
+        title("Labor (${labor.size})")
+        labor.take(80).forEach { l -> if (y > 800f) newPage(); line("${l.minutes} min @ ${CurrencyRon.formatMinorUnits(l.hourlyRateRon)}/h on ${l.date}") }
+
+        doc.finishPage(page)
+        doc.writeTo(output)
+        doc.close()
+        output.flush()
+    }
     suspend fun exportProjectsToPdf(output: OutputStream) {
         val projects = db.projectDao().getAll().first()
         val clients = db.clientDao().getAll().first()
