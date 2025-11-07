@@ -1,10 +1,6 @@
 package com.predandrei.atelier.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -64,12 +60,36 @@ fun DashboardScreen(
     val overdueCount = installments.count { !it.paid && java.time.LocalDate.parse(it.dueDate) < today }
 
     val cards = listOf(
-        DashboardItem("Active Projects", "$activeProjects in progress", Icons.Rounded.Work),
-        DashboardItem("Stock Items", "${items.size} total", Icons.Rounded.Inventory2),
-        DashboardItem("Low stock", "$lowStock items", Icons.Rounded.Inventory2),
-        DashboardItem("Monthly Revenue", "${CurrencyRon.formatMinorUnits(monthlyRevenue)}  $deltaLabel", Icons.Rounded.CheckCircle),
-        DashboardItem("Pending Payments", "${CurrencyRon.formatMinorUnits(pendingAmount)}  $overdueCount overdue", Icons.Rounded.CheckCircle),
-        DashboardItem("Profit", CurrencyRon.formatMinorUnits(profit), Icons.Rounded.CheckCircle),
+        StatsItem(
+            title = "Active Projects",
+            primary = activeProjects.toString(),
+            secondary = "In Progress",
+            icon = Icons.Rounded.Work
+        ),
+        StatsItem(
+            title = "Stock Items",
+            primary = items.size.toString(),
+            secondary = "$lowStock low stock",
+            icon = Icons.Rounded.Inventory2
+        ),
+        StatsItem(
+            title = "Monthly Revenue",
+            primary = CurrencyRon.formatMinorUnits(monthlyRevenue),
+            secondary = deltaLabel,
+            icon = Icons.Rounded.CheckCircle
+        ),
+        StatsItem(
+            title = "Pending Payments",
+            primary = CurrencyRon.formatMinorUnits(pendingAmount),
+            secondary = "$overdueCount overdue",
+            icon = Icons.Rounded.CheckCircle
+        ),
+        StatsItem(
+            title = "Profit",
+            primary = CurrencyRon.formatMinorUnits(profit),
+            secondary = "Total Profit",
+            icon = Icons.Rounded.CheckCircle
+        ),
     )
 
     LazyColumn(
@@ -77,42 +97,33 @@ fun DashboardScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        item { Text("Management Panel", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 8.dp)) }
         items(cards) { item ->
             val onClick = when (item.title) {
                 "Active Projects" -> onOpenProjects
-                "Inventory alerts" -> onOpenInventory
                 "Stock Items" -> onOpenInventory
-                "Low stock" -> onOpenInventory
                 "Profit" -> onOpenFinance
                 else -> ({})
             }
             ElevatedCard(onClick = onClick) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = item.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                    Text(
-                        text = item.subtitle,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
+                Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(imageVector = item.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(text = item.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text(text = item.primary, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 4.dp))
+                        if (item.secondary.isNotBlank()) {
+                            Text(text = item.secondary, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-private data class DashboardItem(
+private data class StatsItem(
     val title: String,
-    val subtitle: String,
+    val primary: String,
+    val secondary: String,
     val icon: androidx.compose.ui.graphics.vector.ImageVector
 )

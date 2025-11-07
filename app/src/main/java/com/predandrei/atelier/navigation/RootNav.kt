@@ -102,8 +102,13 @@ fun RootNav() {
         topBar = { androidx.compose.foundation.layout.Column {
             CenterAlignedTopAppBar(
             title = {
-                val titleRes = bottomDestinations.firstOrNull { it.route == currentRoute }?.labelRes
-                if (titleRes != null) Text(stringResource(titleRes)) else Text(currentRoute.replaceFirstChar { it.uppercase() })
+                val topRoutes = listOf("projects", "inventory", "finance", "payments")
+                if (currentRoute in topRoutes) {
+                    Text("Management Panel")
+                } else {
+                    val titleRes = bottomDestinations.firstOrNull { it.route == currentRoute }?.labelRes
+                    if (titleRes != null) Text(stringResource(titleRes)) else Text(currentRoute.replaceFirstChar { it.uppercase() })
+                }
             },
             navigationIcon = {
                 if (!isBottom) {
@@ -184,7 +189,7 @@ fun RootNav() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "dashboard",
+            startDestination = "projects",
             modifier = Modifier.fillMaxSize().padding(innerPadding),
             route = "root"
         ) {
