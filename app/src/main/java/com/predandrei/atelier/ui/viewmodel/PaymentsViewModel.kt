@@ -17,6 +17,8 @@ import javax.inject.Inject
 class PaymentsViewModel @Inject constructor(
     private val db: AppDatabase
 ) : ViewModel() {
+    val allInstallments = db.paymentDao().getAllInstallments()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun planForProject(projectId: Long): StateFlow<PaymentPlan?> =
         db.paymentDao().getPlans().map { plans -> plans.firstOrNull { it.projectId == projectId } }
