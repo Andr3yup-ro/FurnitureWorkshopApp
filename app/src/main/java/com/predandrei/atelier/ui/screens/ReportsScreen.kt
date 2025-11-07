@@ -22,9 +22,7 @@ fun ReportsScreen(vm: ReportsViewModel = hiltViewModel()) {
 
     val createDocLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
         if (uri != null) {
-            ctx.contentResolver.openOutputStream(uri)?.use { out ->
-                vm.exportAll(out)
-            }
+            vm.exportAll(uri, ctx.contentResolver)
             pendingUri = uri
         }
     }

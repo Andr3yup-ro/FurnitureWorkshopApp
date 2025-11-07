@@ -84,13 +84,10 @@ fun RootNav() {
     val ctx = LocalContext.current
     val createDocLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
         if (uri != null) {
-            val resolver = ctx.contentResolver
-            resolver.openOutputStream(uri)?.use { out ->
-                when (currentRoute) {
-                    "projects" -> reportsVm.exportProjects(out)
-                    "inventory" -> reportsVm.exportInventory(out)
-                    "finance" -> reportsVm.exportFinance(out)
-                }
+            when (currentRoute) {
+                "projects" -> reportsVm.exportProjects(uri, ctx.contentResolver)
+                "inventory" -> reportsVm.exportInventory(uri, ctx.contentResolver)
+                "finance" -> reportsVm.exportFinance(uri, ctx.contentResolver)
             }
         }
     }
